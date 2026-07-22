@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth h-full">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-N3NC9S8W');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5th Meridian | The Augmented Analyst: WCSB Wildfire Risk Engine</title>
+    <link rel="icon" href="image_0.png" type="image/png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Premium Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#09090b',
+                        charcoal: '#18181b',
+                        meridianGold: {
+                            light: '#fef08a',
+                            DEFAULT: '#fbbf24',
+                            dark: '#d97706',
+                        },
+                        silver: {
+                            light: '#f4f4f5',
+                            DEFAULT: '#d4d4d8',
+                            dark: '#a1a1aa',
+                        },
+                        hazardOrange: '#f97316',
+                        hazardRed: '#f43f5e'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .landscape-bw {
+            filter: grayscale(100%) contrast(160%) brightness(75%);
+            mix-blend-mode: luminosity;
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .landscape-bw:hover {
+            filter: grayscale(100%) contrast(180%) brightness(85%);
+        }
+        .gold-glow {
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
+        .text-silver-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Custom Leaflet Dark Tooltips */
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background-color: #18181b !important;
+            color: #f4f4f5 !important;
+            border: 1px solid #27272a !important;
+            border-radius: 2px !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 11px !important;
+        }
+    </style>
+</head>
+<body class="bg-obsidian text-zinc-300 font-sans selection:bg-meridianGold/30 selection:text-white relative min-h-screen">
+    
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N3NC9S8W"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="w-full max-w-[1440px] mx-auto relative bg-obsidian overflow-x-hidden min-h-screen flex flex-col justify-between">
+
+        <!-- Global Golden Meridian Line -->
+        <div class="hidden lg:block absolute left-1/4 top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-meridianGold/40 to-transparent pointer-events-none z-0"></div>
+
+        <!-- Header Navigation -->
+        <header class="sticky top-0 z-50 bg-obsidian/85 backdrop-blur-md border-b border-zinc-800/50">
+            <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="flex items-center space-x-3 group">
+                        <div class="relative w-8 h-8 flex items-center justify-center">
+                            <div class="absolute inset-0 border border-zinc-800 rounded-sm"></div>
+                            <div class="w-[1px] h-full bg-gradient-to-b from-meridianGold-light via-meridianGold to-meridianGold-dark gold-glow"></div>
+                        </div>
+                        <span class="font-mono tracking-widest text-silver-light text-sm font-semibold uppercase group-hover:text-meridianGold transition-colors">5th Meridian</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-8 text-xs font-mono tracking-wider">
+                    <a href="index.html#about" class="hover:text-meridianGold transition-colors">01// ALIGNMENT</a>
+                    <a href="index.html#services" class="hover:text-meridianGold transition-colors">02// CAPABILITIES</a>
+                    <a href="index.html#grid-showcase" class="text-meridianGold hover:text-amber-300 transition-colors">02.5// 5M GRID</a>
+                    <a href="index.html#contact" class="hover:text-meridianGold transition-colors">03// INITIATE</a>
+                    <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-zinc-400 hover:text-meridianGold transition-colors">[ LINKEDIN ↗ ]</a>
+                </nav>
+                <a href="index.html#contact" class="px-4 py-2 border border-zinc-700 text-xs font-mono text-silver-light hover:border-meridianGold/80 hover:text-meridianGold transition-all duration-300">
+                    [ START INQUIRY ]
+                </a>
+            </div>
+        </header>
+
+        <!-- Editorial Hero Section -->
+        <section class="relative py-20 px-6 z-10 border-b border-zinc-900">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-8 space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-sm">
+                        <span class="w-1.5 h-1.5 rounded-full bg-meridianGold animate-pulse"></span>
+                        <span class="text-[9px] font-mono tracking-widest text-silver-dark uppercase">// SPATIAL RISK ANALYTICS & WCSB CLIMATE TELEMETRY</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight text-silver-light leading-tight">
+                        The Augmented Analyst:<br>
+                        <span class="font-semibold text-silver-gradient">Building a WCSB Wildfire Risk Engine with AI & Zero-Cost Pipelines</span>
+                    </h1>
+                    <p class="font-mono text-xs text-zinc-500 uppercase tracking-widest">
+                        By Chris Fleming — Founder, 5th Meridian | Published: July 2026
+                    </p>
+                </div>
+                <div class="lg:col-span-4 relative flex justify-center items-center">
+                    <div class="relative w-full max-w-[280px] aspect-[4/5] overflow-hidden border border-zinc-800 p-2 bg-zinc-950/40">
+                        <div class="w-full h-full overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=600" alt="Mountain Landscape BW" class="w-full h-full object-cover landscape-bw scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-obsidian/40"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Executive TL;DR & Social Share -->
+        <section class="max-w-7xl mx-auto px-6 pt-12 z-10 relative">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <div class="lg:col-span-3"></div>
+                <div class="lg:col-span-9 space-y-6">
+                    <div class="border border-zinc-800 bg-zinc-900/20 p-6 sm:p-8 rounded-sm space-y-4 relative">
+                        <div class="absolute top-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-meridianGold/30 to-transparent"></div>
+                        <div class="flex items-center space-x-2 text-meridianGold font-mono text-xs tracking-wider uppercase font-bold">
+                            <span>♦</span>
+                            <span>EXECUTIVE SUMMARY (TL;DR)</span>
+                        </div>
+                        <div class="text-zinc-300 text-sm space-y-3 leading-relaxed">
+                            <p><strong class="text-silver-light">1. The Premise:</strong> Energy producers and underwriters need dynamic insight into subsurface infrastructure exposure against historical wildfire Fire-Free Intervals (FFI).</p>
+                            <p><strong class="text-silver-light">2. The Execution:</strong> Using Gemini to automate ETL data cleaning on 20 years of Alberta wildfire telemetry (2006–2025), we built a fully responsive risk engine.</p>
+                            <p><strong class="text-silver-light">3. The Live Artifact:</strong> Scroll down to interact with the embedded <strong>Aegis WCSB Risk Engine</strong> below to query asset risk tiers and export underwriting summaries.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Editorial Body & Interactive Infographic -->
+        <main class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
+            
+            <!-- Left Meta Column -->
+            <aside class="lg:col-span-3 space-y-8 font-mono text-[10px] text-zinc-500 lg:sticky lg:top-24 h-fit">
+                <div class="space-y-2 border-b border-zinc-900 pb-6">
+                    <p class="uppercase text-zinc-400 tracking-wider">// READ TIME</p>
+                    <p class="text-silver-light text-xs font-semibold">10 MINUTE SEGMENT</p>
+                </div>
+                <div class="space-y-2 border-b border-zinc-900 pb-6">
+                    <p class="uppercase text-zinc-400 tracking-wider">// CORE ENGINE</p>
+                    <p class="text-zinc-400 normal-case leading-relaxed">Leaflet GIS + Esri Dark Vector Canvas + Fire-Free Interval (FFI) Risk Logic.</p>
+                </div>
+            </aside>
+
+            <!-- Right Main Column -->
+            <article class="lg:col-span-9 space-y-12 text-zinc-400 text-sm sm:text-base leading-relaxed max-w-3xl">
+                
+                <section class="space-y-6">
+                    <span class="font-mono text-xs text-meridianGold tracking-widest block">[ SECTION_01 // THE SPATIAL REALITY ]</span>
+                    <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight leading-snug">
+                        Correlating Fuel Age with Subsurface Assets
+                    </h2>
+                    <p>
+                        In the Western Canadian Sedimentary Basin (WCSB), energy producers and underwriters are wrestling with a growing spatial blind spot: <strong>Fire-Free Interval (FFI) delta</strong>. Areas that have avoided wildfire for over 50 years accumulate extreme timber fuel loads, exponentially increasing catastrophic crown fire risk when ignition strikes.
+                    </p>
+                    <p>
+                        Rather than relying on static PDF reports or expensive enterprise GIS packages, we engineered <strong>Aegis</strong>—a zero-cost, interactive web utility that pairs regional wildfire telemetry with asset vulnerability modeling.
+                    </p>
+                </section>
+
+                <!-- EMBEDDED INTERACTIVE INFOGRAPHIC: AEGIS RISK ENGINE -->
+                <section class="space-y-6 border-t border-zinc-900 pt-10">
+                    <span class="font-mono text-xs text-meridianGold tracking-widest block">[ SECTION_02 // INTERACTIVE EXPLORATION ]</span>
+                    <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight leading-snug">
+                        Aegis // WCSB Asset Risk & Compliance Engine
+                    </h2>
+                    <p class="text-xs font-mono text-zinc-500">
+                        Test the live prototype below. Select an asset marker on the map to inspect its FFI delta, insured value, and generate an underwriting audit report.
+                    </p>
+
+                    <!-- Aegis Engine Container -->
+                    <div class="bg-charcoal border border-zinc-800 rounded-sm p-6 shadow-2xl space-y-6 font-mono text-xs">
+                        
+                        <!-- Engine Header -->
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-zinc-800 pb-4 gap-4">
+                            <div>
+                                <h3 class="text-meridianGold font-bold text-sm tracking-wider uppercase">AEGIS // WCSB Asset Risk & Compliance Engine</h3>
+                                <p class="text-[10px] text-zinc-500">Subsurface Infrastructure & Fire-Free Interval (FFI) Telemetry</p>
+                            </div>
+                            <div class="flex items-center space-x-2 text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-3 py-1 rounded-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span>STATUS: LIVE INFOGRAPHIC FEED</span>
+                            </div>
+                        </div>
+
+                        <!-- Controls Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                            <div class="md:col-span-5 space-y-1">
+                                <label class="block text-[10px] text-zinc-400 uppercase">Search Asset / DLS:</label>
+                                <input type="text" id="assetSearchInput" placeholder="e.g. WELL-042" class="w-full bg-obsidian border border-zinc-800 px-3 py-2 text-zinc-200 rounded-sm focus:border-meridianGold outline-none">
+                            </div>
+                            <div class="md:col-span-4 space-y-1">
+                                <label class="block text-[10px] text-zinc-400 uppercase">Minimum FFI: <span id="ffiLabel" class="text-meridianGold font-bold">40</span> Years</label>
+                                <input type="range" id="ffiSlider" min="5" max="80" value="40" class="w-full accent-meridianGold cursor-pointer bg-zinc-800 h-2 rounded">
+                            </div>
+                            <div class="md:col-span-3 pt-5">
+                                <button onclick="executeSpatialQuery()" class="w-full bg-meridianGold hover:bg-amber-500 text-obsidian font-bold py-2.5 px-4 rounded-sm tracking-wider uppercase transition-all shadow-md">
+                                    Execute Query
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Map & Inspector Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2">
+                            <!-- Leaflet Map Box -->
+                            <div class="lg:col-span-7 h-[420px] bg-obsidian border border-zinc-800 rounded-sm relative overflow-hidden">
+                                <div id="map" class="w-full h-full z-10"></div>
+                            </div>
+
+                            <!-- Asset Telemetry Inspector -->
+                            <div class="lg:col-span-5 bg-obsidian border border-zinc-800 rounded-sm p-5 flex flex-col justify-between space-y-4">
+                                <div id="inspectorContent" class="space-y-4">
+                                    <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                                        <span id="inspId" class="text-meridianGold font-bold text-sm">SELECT ASSET</span>
+                                        <span id="inspRisk" class="px-2 py-0.5 bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-400 rounded-sm">PENDING</span>
+                                    </div>
+                                    <div class="space-y-2 text-xs">
+                                        <div><span class="text-zinc-500 block text-[10px]">FACILITY NAME:</span> <span id="inspName" class="text-zinc-200">Click any map pin to load telemetry.</span></div>
+                                        <div><span class="text-zinc-500 block text-[10px]">LEGAL LAND (DLS):</span> <span id="inspDls" class="text-zinc-200">---</span></div>
+                                        <div><span class="text-zinc-500 block text-[10px]">FIRE-FREE INTERVAL:</span> <span id="inspFfi" class="text-zinc-200">---</span></div>
+                                        <div><span class="text-zinc-500 block text-[10px]">INSURED ASSET VALUE:</span> <span id="inspVal" class="text-emerald-400 font-bold">---</span></div>
+                                    </div>
+                                </div>
+                                <div class="pt-4 border-t border-zinc-800">
+                                    <button onclick="exportUnderwritingPDF()" class="w-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-silver-light font-bold py-2.5 px-4 rounded-sm tracking-wider uppercase transition-all">
+                                        Export Underwriting PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Metrics Bar -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 text-center">
+                            <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
+                                <span class="text-[10px] text-zinc-500 block uppercase">Assessed Assets</span>
+                                <span id="metricCount" class="text-lg font-bold text-zinc-100">8</span>
+                            </div>
+                            <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
+                                <span class="text-[10px] text-zinc-500 block uppercase">Critical Risk (>50Y)</span>
+                                <span id="metricCritical" class="text-lg font-bold text-hazard-red">4</span>
+                            </div>
+                            <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
+                                <span class="text-[10px] text-zinc-500 block uppercase">Insured Value at Risk</span>
+                                <span class="text-lg font-bold text-meridianGold">$142.8M</span>
+                            </div>
+                            <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
+                                <span class="text-[10px] text-zinc-500 block uppercase">Basin Drought Index</span>
+                                <span class="text-lg font-bold text-hazardOrange">HIGH (DC>450)</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section class="space-y-6 border-t border-zinc-900 pt-10">
+                    <span class="font-mono text-xs text-meridianGold tracking-widest block">[ SECTION_03 // ARCHITECTURAL CONCLUSION ]</span>
+                    <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight leading-snug">
+                        Deploying via Netlify
+                    </h2>
+                    <p>
+                        By combining Python data cleaning scripts with static hosting on Netlify, consulting firms can deploy fully interactive geospatial applications in minutes without recurring cloud database overhead.
+                    </p>
+                </section>
+
+            </article>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-zinc-950 py-12 px-6 border-t border-zinc-900 relative z-10 mt-16">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-zinc-500 font-mono">
+                <div class="flex items-center space-x-2">
+                    <span class="text-meridianGold">♦</span>
+                    <span>© 2026 5th Meridian. All Rights Reserved.</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <span>COORD: 51.0447° N, 114.0719° W</span>
+                    <span>|</span>
+                    <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-zinc-400 hover:text-meridianGold transition-colors">[ LINKEDIN ]</a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Leaflet & App Script -->
+    <script>
+        // Mock Asset Database across Alberta WCSB
+        const assets = [
+            { id: 'WELL-042', name: 'Pembina Cardium Wellhead Alpha', dls: '04-12-048-09W5M', ffi: 62, risk: 'Critical', value: '$14.2M', lat: 53.25, lon: -115.10 },
+            { id: 'COMP-301', name: 'Fort McMurray Pipeline Meter Station', dls: '12-09-089-09W4M', ffi: 74, risk: 'Critical', value: '$21.5M', lat: 56.72, lon: -111.38 },
+            { id: 'FAC-108', name: 'Grand Prairie Compressor Unit B', dls: '08-16-071-05W6M', ffi: 45, risk: 'Moderate', value: '$18.0M', lat: 55.17, lon: -118.78 },
+            { id: 'SOLAR-09', name: 'Brooks Solar Farm Perimeter Array', dls: '02-30-018-15W4M', ffi: 12, risk: 'Low', value: '$32.0M', lat: 50.56, lon: -111.89 },
+            { id: 'WELL-119', name: 'Red Deer Heavy Oil Battery', dls: '16-22-038-27W4M', ffi: 58, risk: 'Critical', value: '$9.8M', lat: 52.26, lon: -113.81 },
+            { id: 'WELL-088', name: 'Fox Creek Condensate Facility', dls: '10-04-062-19W5M', ffi: 68, risk: 'Critical', value: '$28.4M', lat: 54.37, lon: -116.79 },
+            { id: 'FAC-412', name: 'Lloydminster Thermal SAGD Node', dls: '06-11-050-28W3M', ffi: 31, risk: 'Moderate', value: '$12.5M', lat: 53.28, lon: -110.00 },
+            { id: 'COMP-505', name: 'Edmonton Inter-Pipeline Junction', dls: '04-18-053-23W4M', ffi: 24, risk: 'Low', value: '$6.4M', lat: 53.54, lon: -113.49 }
+        ];
+
+        // Initialize Leaflet Map with Esri Dark Gray Canvas Basemap (Guaranteed Tile Rendering)
+        const map = L.map('map', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([53.5461, -113.4938], 6);
+
+        // Esri Dark Gray Vector Base
+        L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 16,
+            minZoom: 4,
+            attribution: 'Esri, DeLorme, NAVTEQ'
+        }).addTo(map);
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        let markerLayers = [];
+
+        function renderMarkers(filterFfi = 0, searchFilter = '') {
+            markerLayers.forEach(m => map.removeLayer(m));
+            markerLayers = [];
+
+            let filtered = assets.filter(a => a.ffi >= filterFfi);
+            if (searchFilter) {
+                filtered = filtered.filter(a => a.id.toLowerCase().includes(searchFilter.toLowerCase()) || a.name.toLowerCase().includes(searchFilter.toLowerCase()));
+            }
+
+            filtered.forEach(asset => {
+                let color = asset.risk === 'Critical' ? '#f43f5e' : asset.risk === 'Moderate' ? '#f97316' : '#fbbf24';
+                
+                let circleMarker = L.circleMarker([asset.lat, asset.lon], {
+                    radius: 8,
+                    fillColor: color,
+                    color: '#09090b',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                }).addTo(map);
+
+                circleMarker.on('click', () => {
+                    selectAsset(asset);
+                });
+
+                markerLayers.push(circleMarker);
+            });
+
+            document.getElementById('metricCount').textContent = filtered.length;
+            document.getElementById('metricCritical').textContent = filtered.filter(a => a.ffi > 50).length;
+        }
+
+        function selectAsset(asset) {
+            document.getElementById('inspId').textContent = asset.id;
+            document.getElementById('inspName').textContent = asset.name;
+            document.getElementById('inspDls').textContent = asset.dls;
+            document.getElementById('inspFfi').textContent = `${asset.ffi} Years Unburned`;
+            document.getElementById('inspVal').textContent = asset.value;
+
+            const riskEl = document.getElementById('inspRisk');
+            riskEl.textContent = `${asset.risk.toUpperCase()} RISK`;
+            riskEl.className = `px-2 py-0.5 border text-[10px] rounded-sm ${asset.risk === 'Critical' ? 'bg-rose-950/40 border-rose-900 text-rose-400' : asset.risk === 'Moderate' ? 'bg-amber-950/40 border-amber-900 text-amber-400' : 'bg-emerald-950/40 border-emerald-900 text-emerald-400'}`;
+
+            map.setView([asset.lat, asset.lon], 8);
+        }
+
+        function executeSpatialQuery() {
+            const query = document.getElementById('assetSearchInput').value;
+            const minFfi = parseInt(document.getElementById('ffiSlider').value);
+            renderMarkers(minFfi, query);
+        }
+
+        document.getElementById('ffiSlider').addEventListener('input', (e) => {
+            document.getElementById('ffiLabel').textContent = e.target.value;
+            executeSpatialQuery();
+        });
+
+        function exportUnderwritingPDF() {
+            alert('[AEGIS ENGINE] Generating automated underwriting risk audit PDF with FFI telemetry and spatial insurance metrics...');
+        }
+
+        // Initial Render
+        renderMarkers(40, '');
+
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 300);
+    </script>
+</body>
+</html>

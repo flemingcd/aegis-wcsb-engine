@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-zinc-950 text-zinc-300">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-N3NC9S8W');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5M Grid | WCSB Operations Portal</title>
+    <link rel="icon" href="image_0.png" type="image/png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Premium Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Leaflet GIS Mapping CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Leaflet Marker Cluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#09090b',
+                        charcoal: '#18181b',
+                        meridianGold: {
+                            light: '#fef08a', /* amber-200 */
+                            DEFAULT: '#fbbf24', /* amber-400 */
+                            dark: '#d97706', /* amber-600 */
+                        },
+                        silver: {
+                            light: '#f4f4f5',
+                            DEFAULT: '#d4d4d8',
+                            dark: '#a1a1aa',
+                        }
+                    },
+                    screens: {
+                        'xs': '400px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbar configurations for a highly technical terminal feel */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #fbbf24;
+        }
+
+        /* Leaflet popup customization to match 5th Meridian Brand styling */
+        .leaflet-popup-content-wrapper {
+            background: #18181b !important;
+            color: #d4d4d8 !important;
+            border: 1px solid #27272a !important;
+            border-radius: 4px !important;
+            padding: 0px !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7) !important;
+        }
+        .leaflet-popup-content {
+            margin: 12px !important;
+            line-height: inherit !important;
+        }
+        .leaflet-popup-tip {
+            background: #18181b !important;
+            border-left: 1px solid #27272a !important;
+            border-bottom: 1px solid #27272a !important;
+        }
+        .leaflet-container {
+            font-family: 'Inter', sans-serif !important;
+        }
+        .leaflet-bar {
+            border: 1px solid #27272a !important;
+            box-shadow: none !important;
+        }
+        .leaflet-bar a {
+            background-color: #18181b !important;
+            color: #d4d4d8 !important;
+            border-bottom: 1px solid #27272a !important;
+            transition: all 0.2s;
+        }
+        .leaflet-bar a:hover {
+            background-color: #fbbf24 !important;
+            color: #09090b !important;
+        }
+
+        /* Custom glow effects for lines and status derrick markers */
+        .gold-glow {
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.35);
+        }
+        .pulsing-ring {
+            animation: pulse-ring-animation 2s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring-animation {
+            0% { transform: scale(0.5); opacity: 0.8; }
+            80%, 100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        /* Slide-out CSS rules for contractor directories */
+        .slide-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+        .slide-panel.active {
+            max-height: 140px;
+            opacity: 1;
+        }
+
+        /* Custom Marker Cluster Styles matching 5M Identity */
+        .custom-cluster-icon {
+            background: transparent !important;
+            border: none !important;
+        }
+        .custom-cluster-bubble {
+            transition: all 0.25s ease-out;
+        }
+        .custom-cluster-bubble:hover {
+            transform: scale(1.08);
+        }
+    </style>
+</head>
+<body class="h-full w-full overflow-hidden font-sans selection:bg-meridianGold/30 selection:text-white relative bg-zinc-950">
+    
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N3NC9S8W"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- ENTRY GATEWAY OVERLAY -->
+    <div id="gatekeeper-screen" class="absolute inset-0 z-[9999] bg-zinc-950 flex flex-col items-center justify-center p-6 transition-all duration-700">
+        <div class="absolute left-1/2 top-0 -translate-x-1/2 w-[1px] h-full bg-gradient-to-b from-meridianGold/20 via-meridianGold/5 to-transparent pointer-events-none"></div>
+        
+        <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 p-8 space-y-8 relative rounded-sm shadow-2xl">
+            <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-meridianGold/40 to-transparent"></div>
+            
+            <div class="text-center space-y-3">
+                <div class="inline-flex items-center justify-center w-12 h-12 border border-zinc-800 rounded-sm relative bg-zinc-950">
+                    <div class="w-[1px] h-full bg-gradient-to-b from-amber-200 via-meridianGold to-meridianGold-dark gold-glow"></div>
+                </div>
+                <h1 class="text-xl font-mono tracking-widest text-silver-light font-semibold uppercase">5M GRID PORTAL</h1>
+                <p class="text-xs text-zinc-500 font-mono tracking-wider uppercase">// LATITUDE OF DATA EXECUTION</p>
+            </div>
+
+            <div class="text-center space-y-6 pt-2">
+                <div class="p-4 border border-zinc-800/80 bg-zinc-950/60 text-left font-mono text-xs space-y-2 rounded-sm">
+                    <div class="flex items-center space-x-2 text-meridianGold">
+                        <span class="w-2 h-2 rounded-full bg-meridianGold animate-pulse"></span>
+                        <span class="text-[10px] uppercase font-semibold">Local Environment Ready</span>
+                    </div>
+                    <p class="text-zinc-400 text-[11px] leading-relaxed">
+                        Interactive GIS spatial map with embedded local datasets and expanded pipeline clickboxes.
+                    </p>
+                </div>
+
+                <button onclick="bypassGateway()" class="w-full py-4 bg-meridianGold text-obsidian font-mono text-xs font-bold tracking-widest uppercase hover:bg-meridianGold-light transition-all shadow-lg shadow-meridianGold/10 flex items-center justify-center space-x-2 group rounded-sm">
+                    <span>ENTER 5M GRID MAP</span>
+                    <span class="transform group-hover:translate-x-1 transition-transform">→</span>
+                </button>
+            </div>
+
+            <div class="pt-4 border-t border-zinc-800/80 text-center font-mono text-[9px] text-zinc-600">
+                // SYSTEM ID: 5M-GRID-2026 // CONTACT: connect@5th-meridian.com
+            </div>
+        </div>
+    </div>
+
+    <!-- CONCEPT & LIABILITY DISCLAIMER OVERLAY -->
+    <div id="disclaimer-overlay" class="hidden fixed inset-0 z-[99999] bg-zinc-950/95 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-500 opacity-0 pointer-events-none">
+        <div class="w-full max-w-xl bg-zinc-900 border border-zinc-800 p-8 space-y-6 relative rounded-sm shadow-2xl">
+            <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent"></div>
+            
+            <div class="space-y-2">
+                <div class="flex items-center space-x-2 text-orange-500">
+                    <span class="font-mono text-[9px] font-bold bg-orange-950/50 px-2 py-0.5 border border-orange-900/40 rounded-sm">▲ WARNING</span>
+                    <span class="font-mono text-[9px] uppercase tracking-widest text-zinc-500">// CONCEPT VERIFICATION & DESIGN STAGING</span>
+                </div>
+                <h2 class="text-base font-mono font-semibold tracking-widest text-silver-light uppercase">LIABILITY DISCLAIMER & NOTICE</h2>
+            </div>
+
+            <div class="space-y-4 text-xs font-mono text-zinc-400 leading-relaxed max-h-[250px] overflow-y-auto pr-2 border-t border-b border-zinc-800/60 py-4">
+                <p class="text-silver font-semibold">
+                    [ CRITICAL NOTICE ] ALL DATASETS DISPLAYED WITHIN THIS PORTAL PORTFOLIO ARE FULLY SIMULATED, DESIGNED CONCEPTUALLY, AND REPRESENT STAGE SAMPLE VALUES.
+                </p>
+            </div>
+
+            <button onclick="dismissDisclaimer()" class="w-full py-3 bg-zinc-950 hover:bg-orange-500 hover:text-obsidian text-orange-500 border border-orange-500 transition-all duration-300 tracking-widest font-semibold font-mono text-xs uppercase rounded-sm">
+                [ ACKNOWLEDGE & ENTER PROTOTYPE ]
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP TUTORIAL OVERLAY -->
+    <div id="tutorial-overlay" class="hidden fixed inset-0 z-[99998] bg-zinc-950/80 flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
+        <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 p-6 space-y-6 relative rounded-sm shadow-2xl font-mono text-xs text-zinc-400">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <span class="text-meridianGold text-[10px] font-bold tracking-widest uppercase">// QUICK START TUTORIAL</span>
+                <span id="tutorial-step-indicator" class="text-[9px] text-zinc-600 uppercase font-semibold">Step 1 of 4</span>
+            </div>
+
+            <div id="tutorial-step-1" class="space-y-3">
+                <h4 class="text-silver-light font-bold text-sm tracking-wide uppercase">01 // Interactive Map Legend</h4>
+                <p class="leading-relaxed">
+                    Use the floating <strong class="text-meridianGold">Map Filters Legend</strong> in the bottom-right of your screen. 
+                </p>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-zinc-800">
+                <button onclick="skipTutorial()" class="hover:text-rose-400 text-zinc-600 font-semibold tracking-wider transition-colors uppercase">[ SKIP ]</button>
+                <div class="flex items-center space-x-3">
+                    <button id="tutorial-prev-btn" onclick="prevTutorialStep()" class="hidden hover:text-meridianGold text-zinc-400 transition-colors">← Back</button>
+                    <button id="tutorial-next-btn" onclick="nextTutorialStep()" class="bg-zinc-950 border border-zinc-800 text-meridianGold px-4 py-2 hover:bg-meridianGold hover:text-obsidian hover:border-meridianGold transition-all uppercase tracking-wider font-semibold">[ NEXT STEP ]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE OPERATIONS PORTAL -->
+    <div id="operations-portal" class="h-full w-full flex flex-col md:flex-row relative opacity-0 transition-opacity duration-1000 overflow-hidden">
+        
+        <!-- SIDEBAR DIAGNOSTIC CONTROLS PANEL -->
+        <aside id="sidebar-panel" class="w-full md:w-[410px] bg-zinc-950 border-r border-zinc-900 flex flex-col shrink-0 relative transition-all duration-500 ease-in-out z-40">
+            
+            <div class="p-4 border-b border-zinc-900 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="relative w-6 h-6 flex items-center justify-center">
+                        <div class="absolute inset-0 border border-zinc-800 rounded-sm"></div>
+                        <div class="w-[1px] h-full bg-meridianGold gold-glow"></div>
+                    </div>
+                    <div>
+                        <h2 class="font-mono text-xs font-semibold text-silver-light tracking-widest uppercase">5M GRID</h2>
+                        <p class="text-[9px] font-mono text-zinc-600 tracking-wider">// SPATIAL TELEMETRY</p>
+                    </div>
+                </div>
+                
+                <button onclick="toggleSidebarCollapse()" id="desktop-collapse-btn" class="hidden md:flex items-center justify-center w-8 h-8 border border-zinc-800 hover:border-zinc-700 bg-zinc-900/20 text-zinc-400 hover:text-meridianGold transition-colors rounded-sm font-mono text-xs" title="Collapse Control Board">
+                    [-]
+                </button>
+                
+                <button onclick="toggleMobileCollapse()" class="md:hidden flex items-center justify-center px-2 py-1 border border-zinc-800 text-[10px] font-mono text-zinc-500 hover:text-meridianGold rounded-sm">
+                    [ - COLLAPSE ]
+                </button>
+            </div>
+
+            <!-- Tab Navigation Systems -->
+            <div class="grid grid-cols-2 border-b border-zinc-900 font-mono text-[10px] tracking-wider text-center bg-zinc-900/10">
+                <button onclick="switchTab('rigs')" id="tab-btn-rigs" class="py-3 border-r border-zinc-900 text-meridianGold font-semibold border-b border-meridianGold uppercase transition-all">
+                    // RIG DIRECTORY
+                </button>
+                <button onclick="switchTab('land')" id="tab-btn-land" class="py-3 text-zinc-500 border-b border-transparent hover:text-silver uppercase transition-all">
+                    // LAND LEASES
+                </button>
+            </div>
+
+            <!-- Scrollable Asset Directory -->
+            <div id="sidebar-scroll-viewport" class="flex-1 overflow-y-auto p-4 space-y-4">
+                
+                <!-- Active RIG Filter Tools & Checkbox -->
+                <div id="rigs-control-card" class="space-y-4">
+                    <div class="p-3 bg-zinc-900/20 border border-zinc-900/80 rounded-sm space-y-3">
+                        <h4 class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">// Pipeline Infrastructure</h4>
+                        <label class="flex items-center space-x-3 cursor-pointer group">
+                            <input type="checkbox" id="pipeline-layer-toggle" onchange="togglePipelineOverlay(this.checked)" class="accent-meridianGold h-3.5 w-3.5 rounded border-zinc-800 bg-zinc-950 focus:ring-0">
+                            <span class="font-mono text-xs text-zinc-400 group-hover:text-silver-light transition-colors">WCSB Pipeline Corridors</span>
+                        </label>
+                    </div>
+
+                    <div id="rigs-records-list" class="space-y-2"></div>
+                </div>
+
+                <!-- Active LAND LEASE Filter Tools & Listings -->
+                <div id="land-control-card" class="hidden space-y-4">
+                    <div class="p-3 bg-zinc-900/20 border border-zinc-900/80 rounded-sm space-y-2">
+                        <span class="font-mono text-[10px] text-zinc-500 block tracking-widest">// ALBERTA DLS SYSTEM</span>
+                        <p class="text-[11px] text-zinc-400 leading-relaxed">
+                            Displaying 16-division vector grids for each quarter-section crown parcel.
+                        </p>
+                    </div>
+
+                    <div class="p-3 bg-zinc-900/20 border border-zinc-900/80 rounded-sm space-y-3">
+                        <h4 class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">// Pipeline Infrastructure</h4>
+                        <label class="flex items-center space-x-3 cursor-pointer group">
+                            <input type="checkbox" id="pipeline-layer-toggle-land" onchange="togglePipelineOverlay(this.checked)" class="accent-meridianGold h-3.5 w-3.5 rounded border-zinc-800 bg-zinc-950 focus:ring-0">
+                            <span class="font-mono text-xs text-zinc-400 group-hover:text-silver-light transition-colors">WCSB Pipeline Corridors</span>
+                        </label>
+                    </div>
+
+                    <div class="p-3 bg-zinc-900/20 border border-zinc-900/80 rounded-sm space-y-3">
+                        <h4 class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">// Liability Assets</h4>
+                        <label class="flex items-center space-x-3 cursor-pointer group">
+                            <input type="checkbox" id="orphan-layer-toggle" checked onchange="toggleOrphanWellOverlay(this.checked)" class="accent-orange-500 h-3.5 w-3.5 rounded border-zinc-800 bg-zinc-950 focus:ring-0">
+                            <span class="font-mono text-xs text-zinc-400 group-hover:text-silver-light transition-colors">AER Orphaned Well Layer</span>
+                        </label>
+                    </div>
+
+                    <div id="land-records-list" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- Cognitive AI Diagnostic Console -->
+            <div class="p-4 border-t border-zinc-900 bg-zinc-950/95 space-y-3 shrink-0">
+                <div class="flex items-center justify-between">
+                    <span class="font-mono text-[9px] text-zinc-500 uppercase tracking-widest">// COGNITIVE DIAGNOSTIC AGENT</span>
+                    <span class="text-[8px] font-mono px-2 py-0.5 bg-emerald-950/30 border border-emerald-900/40 text-emerald-400 rounded-full uppercase tracking-widest">GEMINI ACTIVE</span>
+                </div>
+                
+                <div id="ai-response-field" class="p-3 bg-zinc-900/40 border border-zinc-900 rounded-sm font-mono text-[10px] leading-relaxed text-zinc-400 min-h-[90px] max-h-[140px] overflow-y-auto scrollbar-none">
+                    Select any active WCSB rig coordinate, Alberta Crown land parcel, or Orphaned well cluster to run localized geological assessment and environmental risk verification.
+                </div>
+
+                <button onclick="executeAISiteSummary()" class="w-full py-2 bg-zinc-900 hover:bg-meridianGold hover:text-obsidian border border-zinc-800 hover:border-meridianGold text-silver-light font-mono text-[10px] uppercase tracking-wider transition-all rounded-sm">
+                    [ INITIATE TECHNICAL ANALYSIS ]
+                </button>
+            </div>
+
+            <footer class="p-3 bg-zinc-950 border-t border-zinc-900/60 text-[9px] font-mono text-zinc-600 flex justify-between items-center shrink-0">
+                <span>SEC16 // COORD REF: 51.0447° N</span>
+                <a href="mailto:connect@5th-meridian.com" class="hover:text-meridianGold text-zinc-500 transition-colors uppercase font-mono tracking-wider select-all">connect@5th-meridian.com</a>
+                <span>v3.42-STABLE</span>
+            </footer>
+        </aside>
+
+        <!-- GIS SPATIAL CANVAS AREA -->
+        <main class="flex-1 h-full relative bg-zinc-950">
+            <div id="leaflet-map-mount" class="w-full h-full z-0"></div>
+
+            <button id="sidebar-expand-trigger" onclick="toggleSidebarCollapse()" class="hidden absolute left-4 top-4 z-[400] px-4 py-2 bg-zinc-900 border border-zinc-800 text-silver hover:text-meridianGold font-mono text-xs tracking-wider transition-all duration-300 rounded-sm shadow-xl flex items-center space-x-2">
+                <span class="text-meridianGold">[+]</span>
+                <span>EXPAND CONTROL BOARD</span>
+            </button>
+
+            <!-- MAP INTERACTIVE LEGEND OVERLAY -->
+            <div id="map-legend" class="absolute bottom-6 right-6 z-[400] p-4 bg-zinc-950/90 backdrop-blur-md border border-zinc-900 rounded-sm shadow-2xl w-64 max-w-xs space-y-3 font-mono transition-all duration-300">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                    <span id="legend-header-title" class="text-[9px] text-zinc-500 uppercase tracking-widest">// MAP FILTERS</span>
+                    <div class="flex items-center space-x-2">
+                        <span id="legend-click-prompt" class="text-[8px] px-1.5 py-0.2 bg-zinc-900 border border-zinc-800 text-silver-dark uppercase rounded-sm">CLICK TO FILTER</span>
+                        <button onclick="toggleLegendCollapse()" id="legend-collapse-toggle-btn" class="text-zinc-400 hover:text-meridianGold text-xs font-bold font-mono px-1 border border-zinc-800 hover:border-zinc-700 rounded-sm transition-colors" title="Collapse Legend">
+                            [-]
+                        </button>
+                    </div>
+                </div>
+
+                <div id="legend-collapsible-wrapper" class="space-y-3 transition-all duration-300">
+                    <div class="space-y-1.5 border-b border-zinc-900/80 pb-2">
+                        <div onclick="toggleLegendFilter('NGTL Transmission System')" id="legend-item-NGTL" class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-900/50 p-1 rounded transition-all opacity-40 line-through">
+                            <span class="w-3 h-[2px] bg-amber-500 shadow-[0_0_5px_rgba(245,158,11,0.5)]"></span>
+                            <span class="text-[9.5px] text-silver font-semibold uppercase">NGTL Gas System</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('Alliance Export Pipeline')" id="legend-item-Alliance" class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-900/50 p-1 rounded transition-all opacity-40 line-through">
+                            <span class="w-3 h-[2px] bg-yellow-400 shadow-[0_0_5px_rgba(251,191,36,0.5)]"></span>
+                            <span class="text-[9.5px] text-silver font-semibold uppercase">Alliance Corridor</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('Trans Mountain Expansion (TMX)')" id="legend-item-TMX" class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-900/50 p-1 rounded transition-all opacity-40 line-through">
+                            <span class="w-3 h-[2px] bg-cyan-400 shadow-[0_0_5px_rgba(6,182,212,0.5)]"></span>
+                            <span class="text-[9.5px] text-silver font-semibold uppercase">TMX Tidewater (BC)</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('Churchill Bay Corridor')" id="legend-item-Churchill" class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-900/50 p-1 rounded transition-all opacity-40 line-through">
+                            <span class="w-3 h-[2px] bg-purple-400 shadow-[0_0_5px_rgba(192,132,252,0.5)]"></span>
+                            <span class="text-[9.5px] text-silver font-semibold uppercase">Churchill Express</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('East Coast Export Mainline')" id="legend-item-EastCoast" class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-900/50 p-1 rounded transition-all opacity-40 line-through">
+                            <span class="w-3 h-[2px] bg-pink-400 shadow-[0_0_5px_rgba(244,114,182,0.5)]"></span>
+                            <span class="text-[9.5px] text-silver font-semibold uppercase">East Coast Mainline</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Rigs Tab Legend Filters -->
+                    <div id="legend-rigs" class="space-y-2">
+                        <div onclick="toggleLegendFilter('Drilling')" id="legend-item-Drilling" class="flex items-center space-x-2.5 cursor-pointer hover:bg-zinc-900/50 p-1.5 rounded transition-all">
+                            <span class="w-3 h-3 bg-meridianGold border border-amber-500/30 flex items-center justify-center rounded-sm text-[8px] font-bold text-obsidian">D</span>
+                            <span class="text-[11px] text-silver font-medium">Active Drilling Rig</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('Active Service')" id="legend-item-ActiveService" class="flex items-center space-x-2.5 cursor-pointer hover:bg-zinc-900/50 p-1.5 rounded transition-all">
+                            <span class="w-3 h-3 bg-sky-400 border border-sky-500/30 flex items-center justify-center rounded-sm text-[8px] font-bold text-obsidian">S</span>
+                            <span class="text-[11px] text-silver font-medium">Active Service Rig</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('Rigging Up')" id="legend-item-RiggingUp" class="flex items-center space-x-2.5 cursor-pointer hover:bg-zinc-900/50 p-1.5 rounded transition-all">
+                            <span class="w-3 h-3 bg-rose-500 border border-rose-500/30 flex items-center justify-center rounded-sm text-[8px] font-bold text-obsidian">R</span>
+                            <span class="text-[11px] text-silver font-medium">Rigging Up/Moving</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('Suspended')" id="legend-item-Suspended" class="flex items-center space-x-2.5 cursor-pointer hover:bg-zinc-900/50 p-1.5 rounded transition-all">
+                            <span class="w-3 h-3 bg-zinc-600 border border-zinc-700/30 flex items-center justify-center rounded-sm text-[8px] font-bold text-obsidian">P</span>
+                            <span class="text-[11px] text-zinc-500 font-medium">Suspended Operations</span>
+                        </div>
+                    </div>
+
+                    <!-- Land Tab Legend Filters -->
+                    <div id="legend-land" class="hidden space-y-2">
+                        <div onclick="toggleLegendFilter('Active Lease')" id="legend-item-ActiveLease" class="flex items-center space-x-2.5 cursor-pointer hover:bg-zinc-900/50 p-1.5 rounded transition-all">
+                            <span class="w-3 h-3 bg-amber-400/20 border border-amber-400 rounded-sm animate-pulse"></span>
+                            <span class="text-[11px] text-silver font-medium">Active Crown Lease</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('Upcoming Tender')" id="legend-item-UpcomingTender" class="flex items-center space-x-2.5 cursor-pointer hover:bg-zinc-900/50 p-1.5 rounded transition-all">
+                            <span class="w-3 h-3 bg-emerald-400/20 border border-emerald-400 rounded-sm"></span>
+                            <span class="text-[11px] text-silver font-medium">Upcoming Public Tender</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('Deep Rights Restricted')" id="legend-item-DeepRights" class="flex items-center space-x-2.5 cursor-pointer hover:bg-zinc-900/50 p-1.5 rounded transition-all">
+                            <span class="w-3 h-3 bg-rose-500/20 border border-rose-500 rounded-sm"></span>
+                            <span class="text-[11px] text-silver font-medium">Deep Rights Restricted</span>
+                        </div>
+                        <div onclick="toggleLegendFilter('Orphan Wells')" id="legend-item-Orphan" class="flex items-center space-x-2.5 cursor-pointer hover:bg-zinc-900/50 p-1.5 rounded transition-all">
+                            <span class="w-3 h-3 border border-orange-500 flex items-center justify-center text-orange-500 text-[8px] font-bold bg-orange-950/20 rounded-sm">▲</span>
+                            <span class="text-[11px] text-silver font-medium">Orphan Wells Cluster</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-2.5 border-t border-zinc-900 text-[8.5px] text-zinc-500 tracking-widest uppercase font-mono flex items-center justify-between">
+                        <span>SUPPORT:</span>
+                        <a href="mailto:connect@5th-meridian.com" class="text-meridianGold hover:text-amber-300 font-semibold transition-colors select-all">connect@5th-meridian.com</a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Leaflet GIS Mapping JS Engine -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Leaflet Marker Cluster JS Engine -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <script>
+        // --- EMBEDDED ORPHAN WELLS DATASET (500 entries) ---
+        const ALBERTA_ORPHAN_WELLS = [
+            {
+                "id": "OW-00002",
+                "siteName": "01-01-002-19W4 (Facility)",
+                "licensee": "REGENT RESOURCES LTD",
+                "dept": "Environment",
+                "projectType": "Environment",
+                "compType": "Well & Access Road",
+                "licNum": "0260210",
+                "lat": 50.05,
+                "lng": -110.07,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00003",
+                "siteName": "01-01-002-19W4 (Facility)",
+                "licensee": "REGENT RESOURCES LTD",
+                "dept": "Environment",
+                "projectType": "Environment",
+                "compType": "Facility - Multiwell Battery - Gas",
+                "licNum": "F28966",
+                "lat": 50.1,
+                "lng": -110.14,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00004",
+                "siteName": "01-01-002-19W4 (Facility)",
+                "licensee": "REGENT RESOURCES LTD",
+                "dept": "Environment",
+                "projectType": "Environment",
+                "compType": "Facility - Compressor",
+                "licNum": "F32411",
+                "lat": 50.15,
+                "lng": -110.21,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00005",
+                "siteName": "01-01-005-05W4 (100) - WIPA",
+                "licensee": "LGX OIL + GAS INC",
+                "dept": "Environment",
+                "projectType": "Environment",
+                "compType": "Well & Access Road",
+                "licNum": "0204202",
+                "lat": 50.2,
+                "lng": -110.28,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00006",
+                "siteName": "01-01-008-16W4 (100) - PS",
+                "licensee": "TABER WATER DISPOSAL INC",
+                "dept": "Intake - Decommissioning",
+                "projectType": "Potential Transfer",
+                "compType": "Well & Access Road",
+                "licNum": "0024955",
+                "lat": 50.25,
+                "lng": -110.35,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00007",
+                "siteName": "01-01-012-13W4 (100)",
+                "licensee": "CANADIAN OIL & GAS INTERNATIONAL INC",
+                "dept": "Environment",
+                "projectType": "Environment",
+                "compType": "Well & Access Road",
+                "licNum": "0109744",
+                "lat": 50.3,
+                "lng": -110.42,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00008",
+                "siteName": "01-01-013-13W4 (100)",
+                "licensee": "SANLING ENERGY LTD",
+                "dept": "Closed",
+                "projectType": "Site Overlap",
+                "compType": "Well & Access Road",
+                "licNum": "0146322",
+                "lat": 50.35,
+                "lng": -110.49,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00009",
+                "siteName": "01-01-017-25W4 (100/16-36)",
+                "licensee": "LEXIN RESOURCES LTD",
+                "dept": "Closed",
+                "projectType": "Rec Cert Issued",
+                "compType": "Well & Access Road",
+                "licNum": "0383257",
+                "lat": 50.4,
+                "lng": -110.56,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00010",
+                "siteName": "01-01-020-20W4 (100/08-01)",
+                "licensee": "HOUSTON OIL & GAS LTD",
+                "dept": "Closed",
+                "projectType": "Rec Cert Issued",
+                "compType": "Well & Access Road",
+                "licNum": "0362701",
+                "lat": 50.45,
+                "lng": -110.63,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00011",
+                "siteName": "01-01-020-20W4 (Multi)",
+                "licensee": "HOUSTON OIL & GAS LTD",
+                "dept": "Decommissioning",
+                "projectType": "Downhole",
+                "compType": "Well & Access Road",
+                "licNum": "0282519",
+                "lat": 50.5,
+                "lng": -110.7,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00012",
+                "siteName": "01-01-020-20W4 (Multi)",
+                "licensee": "HOUSTON OIL & GAS LTD",
+                "dept": "Decommissioning",
+                "projectType": "Downhole",
+                "compType": "Well & Access Road",
+                "licNum": "0371579",
+                "lat": 50.55,
+                "lng": -110.77,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00013",
+                "siteName": "01-01-021-27W4 (Multi)",
+                "licensee": "LEXIN RESOURCES LTD",
+                "dept": "Closed",
+                "projectType": "Rec Cert Issued",
+                "compType": "Well & Access Road",
+                "licNum": "0346689",
+                "lat": 50.6,
+                "lng": -110.84,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00014",
+                "siteName": "01-01-021-27W4 (Multi)",
+                "licensee": "LEXIN RESOURCES LTD",
+                "dept": "Closed",
+                "projectType": "Rec Cert Issued",
+                "compType": "Well & Access Road",
+                "licNum": "0396257",
+                "lat": 50.65,
+                "lng": -110.91,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00015",
+                "siteName": "01-01-024-16W4 (100)",
+                "licensee": "PETHELEN RESOURCES (1973) LIMITED",
+                "dept": "Closed",
+                "projectType": "Rec Cert Issued",
+                "compType": "Well & Access Road",
+                "licNum": "0063835",
+                "lat": 50.7,
+                "lng": -110.98,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00016",
+                "siteName": "01-01-026-09W4 (100) - WIPA",
+                "licensee": "CORINTHIAN OIL CORP",
+                "dept": "Decommissioning",
+                "projectType": "Equipment Removal (Unlicensed Facility)",
+                "compType": "Well & Access Road",
+                "licNum": "0303385",
+                "lat": 50.75,
+                "lng": -111.05,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00017",
+                "siteName": "01-01-026-14W4 (100)",
+                "licensee": "POINT LOMA RESOURCES LTD",
+                "dept": "Environment",
+                "projectType": "Environment",
+                "compType": "Well & Access Road",
+                "licNum": "0154504",
+                "lat": 50.8,
+                "lng": -111.12,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00018",
+                "siteName": "01-01-027-11W4 (100)",
+                "licensee": "TARPON GAS MARKETING LTD",
+                "dept": "Closed",
+                "projectType": "Rec Cert Issued",
+                "compType": "Well & Access Road",
+                "licNum": "0153092",
+                "lat": 50.85,
+                "lng": -111.19,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00019",
+                "siteName": "01-01-030-23W4 (103/16-36)",
+                "licensee": "LEXIN RESOURCES LTD",
+                "dept": "Closed",
+                "projectType": "Rec Cert Issued",
+                "compType": "Well & Access Road",
+                "licNum": "0382139",
+                "lat": 50.9,
+                "lng": -111.26,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            },
+            {
+                "id": "OW-00020",
+                "siteName": "01-01-032-18W4 (100)",
+                "licensee": "TRIDENT EXPLORATION (ALBERTA) CORP",
+                "dept": "Closed",
+                "projectType": "Rec Cert Issued",
+                "compType": "Well & Access Road",
+                "licNum": "0307322",
+                "lat": 50.95,
+                "lng": -111.33,
+                "fromLocation": "(blank)",
+                "toLocation": "(blank)"
+            }
+        ];
+
+        let ALBERTA_RIGS = [];
+        let ALBERTA_LAND_SALES = [];
+
+        const CONTACT_DIRECTORY = {
+            "Tourmaline Oil Corp.": { phone: "+1 (403) 266-5992", email: "land@tourmalineoil.com", address: "3700, 250 - 5th Street SW, Calgary, AB T2P 0R4" },
+            "Chevron Canada": { phone: "+1 (403) 234-5000", email: "chevroninfo@chevron.com", address: "500 - 5th Avenue SW, Calgary, AB T2P 0L7" },
+            "Headwater Exploration": { phone: "+1 (587) 391-3680", email: "info@headwaterexp.com", address: "1600, 215 - 9th Avenue SW, Calgary, AB T2P 1K3" },
+            "Whitecap Resources": { phone: "+1 (403) 266-0767", email: "info@wcap.ca", address: "3800, 525 - 8th Avenue SW, Calgary, AB T2P 1G1" },
+            "ARC Resources Ltd.": { phone: "+1 (403) 503-8600", email: "ir@arcresources.com", address: "1200, 308 - 4th Avenue SW, Calgary, AB T2P 0H7" },
+            "Paramount Resources": { phone: "+1 (403) 290-3600", email: "info@paramountres.com", address: "2800, 421 - 7th Avenue SW, Calgary, AB T2P 4K9" },
+            "Peyto Exploration": { phone: "+1 (403) 261-6082", email: "info@peyto.com", address: "1500, 250 - 2nd Street SW, Calgary, AB T2P 1N1" },
+            "Vermilion Energy": { phone: "+1 (403) 269-4884", email: "ir@vermilionenergy.com", address: "3500, 525 - 8th Avenue SW, Calgary, AB T2P 1G1" },
+            "Cenovus Energy Inc.": { phone: "+1 (403) 766-2000", email: "info@cenovus.com", address: "225 - 6th Avenue SW, Calgary, AB T2P 0H2" },
+            "Ovintiv Inc.": { phone: "+1 (403) 645-2000", email: "info@ovintiv.com", address: "500 Centre Street SE, Calgary, AB T2G 1A6" },
+            "Athabasca Oil Corp.": { phone: "+1 (403) 237-8227", email: "info@atha.com", address: "1200, 215 - 9th Avenue SW, Calgary, AB T2P 1K3" },
+            "ConocoPhillips Canada": { phone: "+1 (403) 233-4000", email: "canada@conocophillips.com", address: "401 - 9th Avenue SW, Calgary, AB T2P 2H7" },
+            "Enerplus Corporation": { phone: "+1 (403) 298-2200", email: "info@enerplus.com", address: "3000, 400 - 3rd Avenue SW, Calgary, AB T2P 4H2" },
+            "Tamarack Valley Energy": { phone: "+1 (403) 263-4440", email: "info@tamarackvalley.ca", address: "3300, 308 - 4th Avenue SW, Calgary, AB T2P 0H7" },
+            "NuVista Energy Ltd.": { phone: "+1 (403) 538-8500", email: "info@nuvistaenergy.com", address: "2500, 525 - 8th Avenue SW, Calgary, AB T2P 1G1" },
+            "Ensign Drilling": { phone: "+1 (403) 262-1366", email: "operations@ensigndrilling.com", address: "400 - 5th Avenue SW, Calgary, AB T2P 0L6" },
+            "Precision Drilling": { phone: "+1 (403) 716-4500", email: "dispatch@precisiondrilling.com", address: "800, 525 - 8th Avenue SW, Calgary, AB T2P 1G1" },
+            "Stampede Drilling": { phone: "+1 (403) 457-3023", email: "info@stampededrilling.com", address: "1200, 324 - 8th Avenue SW, Calgary, AB T2P 2Z2" },
+            "Savanna Drilling": { phone: "+1 (403) 503-9990", email: "dispatch@savannadrilling.com", address: "1400, 311 - 6th Avenue SW, Calgary, AB T2P 3H2" },
+            "Nabors Drilling": { phone: "+1 (403) 264-9700", email: "canada.sales@nabors.com", address: "2800, 500 - 4th Avenue SW, Calgary, AB T2P 2V6" },
+            "Akita Drilling": { phone: "+1 (403) 243-4311", email: "contracts@akitadrilling.com", address: "900, 333 - 5th Avenue SW, Calgary, AB T2P 3B6" },
+            "Horizon Drilling": { phone: "+1 (403) 290-0010", email: "contact@horizondrilling.ca", address: "1600, 444 - 5th Avenue SW, Calgary, AB T2P 2T8" },
+            "Lasso Drilling": { phone: "+1 (403) 887-3301", email: "operations@lassodrilling.com", address: "101, 5101 - 50 Street, Sylvan Lake, AB T4S 2J6" }
+        };
+
+        const PIPELINE_ROUTES = [
+            {
+                name: "NGTL Transmission System",
+                type: "Natural Gas System",
+                diameter: "42 inch Main Trunk",
+                capacity: "3.4 Bcf/d Operational",
+                ownership: "100% TC Energy",
+                projectCost: "$14.2 Billion CAD Cumulative",
+                valYoY: "$9.8 Billion CAD / Year",
+                operator: "TC Energy",
+                status: "High Pressure Flowing",
+                color: "#f59e0b",
+                coords: [[56.251, -120.722], [55.152, -118.802], [54.421, -116.894], [53.512, -116.421], [53.212, -115.152]]
+            },
+            {
+                name: "Alliance Export Pipeline",
+                type: "Rich Gas Corridor",
+                diameter: "36 inch Wet Gas Trunkway",
+                capacity: "1.6 Bcf/d Standard Flow",
+                ownership: "50% Enbridge / 50% Pembina Pipeline",
+                projectCost: "$11.8 Billion CAD",
+                valYoY: "$6.2 Billion CAD / Year",
+                operator: "Alliance Pipeline Joint Venture",
+                status: "High Pressure Flowing",
+                color: "#fbbf24",
+                coords: [[55.411, -118.922], [55.271, -119.032], [54.821, -118.352], [54.122, -116.612], [51.465, -109.155]]
+            },
+            {
+                name: "Trans Mountain Expansion (TMX)",
+                type: "Crude Export Trunkline",
+                diameter: "36-42 inch Expanded System",
+                capacity: "890,000 bbl/d Active Capacity",
+                ownership: "100% Trans Mountain Corporation",
+                projectCost: "$34.2 Billion CAD",
+                valYoY: "$26.4 Billion CAD / Year",
+                operator: "Trans Mountain Corp.",
+                status: "Flowing to Pacific Tidewater",
+                color: "#06b6d4",
+                coords: [[53.546, -113.491], [52.926, -118.081], [50.674, -120.327], [49.282, -122.923]]
+            },
+            {
+                name: "Churchill Bay Corridor",
+                type: "Strategic Northern Crude/LPG",
+                diameter: "30 inch Northern Conduit",
+                capacity: "450,000 bbl/d Proposed Peak",
+                ownership: "FN Syndicate / TC Energy / Manitoba",
+                projectCost: "$18.6 Billion CAD",
+                valYoY: "$12.8 Billion CAD / Year",
+                operator: "Northern Shield Logistics",
+                status: "Conceptual / Environmental Assessment",
+                color: "#c084fc",
+                coords: [[56.726, -111.380], [55.105, -105.302], [55.743, -97.850], [58.768, -94.164]]
+            },
+            {
+                name: "East Coast Export Mainline",
+                type: "Trans-Continental Product Mainline",
+                diameter: "42 inch Eastern Access",
+                capacity: "1,100,000 bbl/d Structural Capacity",
+                ownership: "TC Energy / Enbridge",
+                projectCost: "$28.5 Billion CAD",
+                valYoY: "$32.1 Billion CAD / Year",
+                operator: "Great Lakes Transmission Group",
+                status: "Operational High Capacity Flow",
+                color: "#f472b6",
+                coords: [[52.625, -111.261], [50.445, -104.618], [49.895, -97.138], [49.767, -94.489], [48.380, -89.246]]
+            }
+        ];
+
+        let map = null;
+        let activeTab = 'rigs';
+        let rigMarkers = [];
+        let landPolygons = [];
+        let landLabels = [];
+        let pipelineLayers = [];
+        let orphanClusterGroup = null;
+        let selectedAssetType = null;
+        let selectedAssetId = null;
+
+        const activeFilters = {
+            'Drilling': true,
+            'Active Service': true,
+            'Rigging Up': true,
+            'Suspended': true,
+            'NGTL Transmission System': true,
+            'Alliance Export Pipeline': false,
+            'Trans Mountain Expansion (TMX)': false,
+            'Churchill Bay Corridor': false,
+            'East Coast Export Mainline': false,
+            'Active Lease': true,
+            'Upcoming Tender': true,
+            'Deep Rights Restricted': true,
+            'Orphan Wells': true
+        };
+
+        function bypassGateway() {
+            unlockPortal();
+        }
+
+        async function unlockPortal() {
+            const gate = document.getElementById('gatekeeper-screen');
+            const portal = document.getElementById('operations-portal');
+            
+            try {
+                const [rigsRes, landRes] = await Promise.all([
+                    fetch('./data/rigs.json'),
+                    fetch('./data/land_sales.json')
+                ]);
+
+                if (rigsRes.ok) ALBERTA_RIGS = await rigsRes.json();
+                if (landRes.ok) ALBERTA_LAND_SALES = await landRes.json();
+            } catch (err) {
+                console.warn("Could not load local JSON files:", err);
+            }
+
+            gate.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                gate.remove();
+                portal.classList.remove('opacity-0');
+                portal.classList.add('opacity-100');
+                
+                initOperationsMap();
+                showDisclaimerModal();
+            }, 700);
+        }
+
+        function showDisclaimerModal() {
+            const disclaimer = document.getElementById('disclaimer-overlay');
+            if (disclaimer) {
+                disclaimer.classList.remove('hidden');
+                disclaimer.offsetHeight;
+                disclaimer.classList.remove('opacity-0', 'pointer-events-none');
+                disclaimer.classList.add('opacity-100', 'pointer-events-auto');
+            }
+        }
+
+        function dismissDisclaimer() {
+            const disclaimer = document.getElementById('disclaimer-overlay');
+            if (disclaimer) {
+                disclaimer.classList.remove('opacity-100', 'pointer-events-auto');
+                disclaimer.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    disclaimer.classList.add('hidden');
+                    launchInteractiveTutorial();
+                }, 500);
+            }
+        }
+
+        let tutorialStep = 1;
+        function launchInteractiveTutorial() {
+            const tut = document.getElementById('tutorial-overlay');
+            if (tut) {
+                tut.classList.remove('hidden');
+                tut.offsetHeight;
+                tut.classList.remove('opacity-0', 'pointer-events-none');
+                tut.classList.add('opacity-100', 'pointer-events-auto');
+                updateTutorialStepUI();
+            }
+        }
+
+        function updateTutorialStepUI() {
+            document.getElementById('tutorial-step-indicator').innerText = `Step ${tutorialStep} of 4`;
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`tutorial-step-${i}`);
+                if (el) {
+                    if (i === tutorialStep) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                }
+            }
+            const prevBtn = document.getElementById('tutorial-prev-btn');
+            const nextBtn = document.getElementById('tutorial-next-btn');
+            if (tutorialStep === 1) prevBtn.classList.add('hidden');
+            else prevBtn.classList.remove('hidden');
+            if (tutorialStep === 4) nextBtn.innerText = "[ START PORTAL ]";
+            else nextBtn.innerText = "[ NEXT STEP ]";
+        }
+
+        function nextTutorialStep() {
+            if (tutorialStep < 4) {
+                tutorialStep++;
+                updateTutorialStepUI();
+            } else {
+                skipTutorial();
+            }
+        }
+
+        function prevTutorialStep() {
+            if (tutorialStep > 1) {
+                tutorialStep--;
+                updateTutorialStepUI();
+            }
+        }
+
+        function skipTutorial() {
+            const tut = document.getElementById('tutorial-overlay');
+            if (tut) {
+                tut.classList.remove('opacity-100', 'pointer-events-auto');
+                tut.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => tut.classList.add('hidden'), 400);
+            }
+        }
+
+        function initOperationsMap() {
+            map = L.map('leaflet-map-mount', {
+                center: [52.8, -113.5],
+                zoom: 6,
+                zoomControl: false,
+                attributionControl: false
+            });
+
+            L.control.zoom({ position: 'topright' }).addTo(map);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19
+            }).addTo(map);
+
+            drawPipelineCorridorsOnMap();
+            drawRigMarkersOnMap();
+            drawLandParcelsOnMap();
+            initializeOrphanWellsCluster();
+
+            renderRigsDirectory();
+            renderLandDirectory();
+        }
+
+        function drawPipelineCorridorsOnMap() {
+            pipelineLayers.forEach(p => map.removeLayer(p));
+            pipelineLayers = [];
+
+            PIPELINE_ROUTES.forEach(pipe => {
+                if (!activeFilters[pipe.name]) return;
+
+                const popupLayout = `
+                    <div class="p-1 space-y-2 font-sans w-72">
+                        <div class="border-b border-zinc-800 pb-1.5">
+                            <span class="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">// TRANSMISSION PIPELINE PROFILE</span>
+                            <h3 class="font-mono text-xs font-bold" style="color: ${pipe.color}; margin-top: 2px;">${pipe.name}</h3>
+                        </div>
+                        <div class="space-y-1 font-mono text-[9.5px] text-zinc-400">
+                            <p><strong class="text-zinc-500">OPERATOR:</strong> ${pipe.operator}</p>
+                            <p><strong class="text-zinc-500">DIMENSION:</strong> ${pipe.diameter}</p>
+                            <p><strong class="text-zinc-500">OWNERSHIP:</strong> ${pipe.ownership}</p>
+                            <p><strong class="text-zinc-500">PROJECT COST:</strong> ${pipe.projectCost}</p>
+                            <p><strong class="text-zinc-500">YoY ASSET VALUE:</strong> <span class="text-emerald-400 font-semibold">${pipe.valYoY}</span></p>
+                            <p><strong class="text-zinc-500">CAPACITY:</strong> ${pipe.capacity}</p>
+                            <p><strong class="text-zinc-500">LINE FLOW TYPE:</strong> ${pipe.type}</p>
+                            <p><strong class="text-zinc-500">CORRIDOR STATUS:</strong> <span class="text-emerald-400 font-semibold">${pipe.status}</span></p>
+                        </div>
+                        <div class="pt-1.5 border-t border-zinc-800">
+                            <button onclick="deployAssetDiagnostics('pipe', '${pipe.name}')" class="w-full py-1 bg-zinc-900 hover:bg-meridianGold hover:text-obsidian text-zinc-300 font-mono text-[9px] uppercase tracking-wider border border-zinc-800 transition-all rounded-sm">
+                                [ Query Transmission Diagnostics ]
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                const hitBoxLine = L.polyline(pipe.coords, {
+                    color: 'transparent',
+                    weight: 18,
+                    opacity: 0,
+                    interactive: true
+                }).addTo(map);
+                hitBoxLine.bindPopup(popupLayout);
+                pipelineLayers.push(hitBoxLine);
+
+                const visibleLine = L.polyline(pipe.coords, {
+                    color: pipe.color,
+                    weight: 3.5,
+                    opacity: 0.85,
+                    dashArray: '10, 15',
+                    interactive: false
+                }).addTo(map);
+                pipelineLayers.push(visibleLine);
+            });
+        }
+
+        function drawRigMarkersOnMap() {
+            rigMarkers.forEach(m => map.removeLayer(m));
+            rigMarkers = [];
+
+            if (activeTab !== 'rigs') return;
+
+            ALBERTA_RIGS.forEach(rig => {
+                if (!activeFilters[rig.status]) return;
+
+                let markerColor = "#fbbf24";
+                let letterCode = "D";
+                if (rig.status === 'Active Service') {
+                    markerColor = "#38bdf8";
+                    letterCode = "S";
+                } else if (rig.status === 'Rigging Up') {
+                    markerColor = "#f43f5e";
+                    letterCode = "R";
+                } else if (rig.status === 'Suspended') {
+                    markerColor = "#71717a";
+                    letterCode = "P";
+                }
+
+                const derrickSVG = `
+                    <div class="relative w-8 h-8 flex items-center justify-center">
+                        <span class="absolute pulsing-ring w-6 h-6 rounded-full" style="border: 2px solid ${markerColor};"></span>
+                        <svg class="relative w-7 h-7 filter drop-shadow-md" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M32 4L12 58H52L32 4Z" stroke="${markerColor}" stroke-width="3" fill="#09090b" fill-opacity="0.8"/>
+                            <path d="M22 31H42" stroke="${markerColor}" stroke-width="2"/>
+                            <path d="M17 44H47" stroke="${markerColor}" stroke-width="2"/>
+                            <path d="M27 18H37" stroke="${markerColor}" stroke-width="2"/>
+                            <circle cx="32" cy="31" r="3" fill="${markerColor}"/>
+                        </svg>
+                        <span class="absolute text-[8px] font-mono font-bold text-silver-light top-[11px]">${letterCode}</span>
+                    </div>
+                `;
+
+                const icon = L.divIcon({
+                    html: derrickSVG,
+                    className: 'custom-derrick-marker',
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16]
+                });
+
+                const marker = L.marker([rig.lat, rig.lng], { icon: icon }).addTo(map);
+
+                const popupLayout = `
+                    <div class="p-1 space-y-2 font-sans w-72">
+                        <div class="flex items-center justify-between border-b border-zinc-800 pb-1.5">
+                            <span class="font-mono text-[9px] text-zinc-500 uppercase tracking-widest">// WCSB REAL-TIME FEED</span>
+                            <span class="text-[8px] font-mono px-2 py-0.5 bg-zinc-900 border border-zinc-800 text-silver uppercase rounded-full">${rig.status}</span>
+                        </div>
+                        
+                        <div class="space-y-0.5">
+                            <h3 class="font-mono text-xs font-bold text-silver-light uppercase">${rig.name}</h3>
+                            <p class="text-[9.5px] text-zinc-500 font-mono tracking-wider">// AER LICENSE: ${rig.permit}</p>
+                        </div>
+
+                        <div class="space-y-1 font-mono text-[9.5px] text-zinc-400">
+                            <p>
+                                <strong class="text-zinc-500">OPERATOR:</strong> 
+                                <span onclick="togglePopupContactInfo('op-info-${rig.id}')" class="text-meridianGold font-semibold border-b border-dotted border-meridianGold hover:text-amber-300 cursor-pointer transition-colors">
+                                    ${rig.operator}
+                                </span>
+                            </p>
+                            <div id="op-info-${rig.id}" class="slide-panel p-2 mt-1 bg-zinc-950 border border-zinc-900 rounded-sm space-y-1">
+                                <p class="text-zinc-500 uppercase tracking-widest text-[7.5px]">// CORPORATE ADDRESS</p>
+                                <p class="text-silver-light font-semibold">${CONTACT_DIRECTORY[rig.operator]?.phone || 'N/A'}</p>
+                                <p class="text-zinc-400 font-sans truncate">${CONTACT_DIRECTORY[rig.operator]?.email || 'N/A'}</p>
+                                <p class="text-zinc-400 font-sans truncate text-[8.5px]">${CONTACT_DIRECTORY[rig.operator]?.address || 'N/A'}</p>
+                            </div>
+
+                            <p class="pt-1">
+                                <strong class="text-zinc-500">CONTRACTOR:</strong> 
+                                <span onclick="togglePopupContactInfo('con-info-${rig.id}')" class="text-silver-light font-semibold border-b border-dotted border-zinc-500 hover:text-silver cursor-pointer transition-colors">
+                                    ${rig.contractor}
+                                </span>
+                            </p>
+                            <div id="con-info-${rig.id}" class="slide-panel p-2 mt-1 bg-zinc-950 border border-zinc-900 rounded-sm space-y-1">
+                                <p class="text-zinc-500 uppercase tracking-widest text-[7.5px]">// OPERATIONAL DISPATCH</p>
+                                <p class="text-silver-light font-semibold">${CONTACT_DIRECTORY[rig.contractor]?.phone || 'N/A'}</p>
+                                <p class="text-zinc-400 font-sans truncate">${CONTACT_DIRECTORY[rig.contractor]?.email || 'N/A'}</p>
+                                <p class="text-zinc-400 font-sans truncate text-[8.5px]">${CONTACT_DIRECTORY[rig.contractor]?.address || 'N/A'}</p>
+                            </div>
+                        </div>
+
+                        <div class="p-2 bg-zinc-900/50 border border-zinc-800 rounded-sm space-y-1 font-mono text-[9px] text-zinc-400">
+                            <p><strong class="text-zinc-500">PLAY TARGET:</strong> ${rig.target}</p>
+                            <p><strong class="text-zinc-500">RIG DESIGN:</strong> ${rig.class}</p>
+                            <p><strong class="text-zinc-500">TARGET DEPTH:</strong> ${rig.depth}</p>
+                        </div>
+
+                        <div class="pt-1.5 border-t border-zinc-800">
+                            <button onclick="deployAssetDiagnostics('rig', '${rig.id}')" class="w-full py-1 bg-zinc-900 hover:bg-meridianGold hover:text-obsidian text-zinc-300 font-mono text-[9px] uppercase tracking-wider border border-zinc-800 transition-all rounded-sm">
+                                [ Query Downhole Diagnostics ]
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                marker.bindPopup(popupLayout);
+                marker.assetId = rig.id;
+                marker.assetType = 'rig';
+                rigMarkers.push(marker);
+            });
+        }
+
+        function togglePopupContactInfo(elementId) {
+            const panel = document.getElementById(elementId);
+            if (!panel) return;
+            const parent = panel.parentNode;
+            parent.querySelectorAll('.slide-panel').forEach(p => {
+                if (p.id !== elementId) p.classList.remove('active');
+            });
+            panel.classList.toggle('active');
+        }
+
+        function drawLandParcelsOnMap() {
+            landPolygons.forEach(p => map.removeLayer(p));
+            landLabels.forEach(l => map.removeLayer(l));
+            landPolygons = [];
+            landLabels = [];
+
+            if (activeTab !== 'land') return;
+
+            ALBERTA_LAND_SALES.forEach(parcel => {
+                if (!activeFilters[parcel.status]) return;
+
+                const latOffset = 0.05;
+                const lngOffset = 0.09;
+                
+                const bounds = [
+                    [parcel.lat - latOffset, parcel.lng - lngOffset],
+                    [parcel.lat + latOffset, parcel.lng - lngOffset],
+                    [parcel.lat + latOffset, parcel.lng + lngOffset],
+                    [parcel.lat - latOffset, parcel.lng + lngOffset]
+                ];
+
+                let fillColor = "#fbbf24";
+                let strokeColor = "#fbbf24";
+                if (parcel.status === 'Upcoming Tender') {
+                    fillColor = "#10b981";
+                    strokeColor = "#10b981";
+                } else if (parcel.status === 'Deep Rights Restricted') {
+                    fillColor = "#f43f5e";
+                    strokeColor = "#f43f5e";
+                }
+
+                const poly = L.polygon(bounds, {
+                    color: strokeColor,
+                    weight: 1.5,
+                    fillColor: fillColor,
+                    fillOpacity: 0.15,
+                    dashArray: '3, 3'
+                }).addTo(map);
+
+                drawLSDSubdivisionGrid(bounds, strokeColor).forEach(gridLine => {
+                    gridLine.addTo(map);
+                    landPolygons.push(gridLine);
+                });
+
+                const labelIcon = L.divIcon({
+                    html: `<div class="text-[7px] font-mono text-zinc-500 tracking-tighter uppercase whitespace-nowrap bg-zinc-950/80 px-1 border border-zinc-900/80 rounded-sm">${parcel.id}</div>`,
+                    className: 'custom-land-label',
+                    iconSize: [40, 10]
+                });
+                const labelMarker = L.marker([parcel.lat, parcel.lng], { icon: labelIcon }).addTo(map);
+                landLabels.push(labelMarker);
+
+                const popupLayout = `
+                    <div class="p-1 space-y-2 font-sans w-72">
+                        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                            <span class="font-mono text-[9px] text-zinc-500 uppercase tracking-widest">// ALBERTA CROWN RECORD</span>
+                            <span class="text-[8px] font-mono px-2 py-0.5 bg-zinc-900 border border-zinc-800 text-silver uppercase">${parcel.status}</span>
+                        </div>
+                        
+                        <div class="p-3 bg-zinc-950 border border-zinc-900 rounded-sm font-mono text-[9px] text-emerald-400 leading-snug space-y-2 whitespace-pre-wrap">
+<span>${parcel.id}  ${parcel.size}</span>
+<span>DLS: ${parcel.sectionCode}</span>
+<span class="text-zinc-500 block">----------------------------------</span>
+<span class="text-silver-dark font-sans leading-relaxed block text-[9.5px]">${parcel.rights}</span>
+                        </div>
+
+                        <div class="space-y-1 font-mono text-[9px] text-zinc-400">
+                            <p><strong class="text-zinc-500">CURRENT TENANT:</strong> <span class="text-meridianGold font-semibold">${parcel.buyer || 'None'}</span></p>
+                            <p><strong class="text-zinc-500">BONUS BID:</strong> ${parcel.cost}</p>
+                            <p><strong class="text-zinc-500">LEASE CLASS:</strong> ${parcel.type}</p>
+                            <p><strong class="text-zinc-500">EXPIRATION:</strong> ${parcel.expiry}</p>
+                        </div>
+                        <div class="pt-2 border-t border-zinc-900">
+                            <button onclick="deployAssetDiagnostics('land', '${parcel.id}')" class="w-full py-1 bg-zinc-900 hover:bg-meridianGold hover:text-obsidian text-zinc-300 font-mono text-[9px] uppercase tracking-wider border border-zinc-800 transition-all rounded-sm">
+                                [ Query Crown Lease Diagnostics ]
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                poly.bindPopup(popupLayout);
+                poly.assetId = parcel.id;
+                poly.assetType = 'land';
+                landPolygons.push(poly);
+            });
+        }
+
+        function drawLSDSubdivisionGrid(bounds, strokeColor) {
+            const gridLines = [];
+            const latMin = bounds[0][0];
+            const latMax = bounds[1][0];
+            const lngMin = bounds[0][1];
+            const lngMax = bounds[2][1];
+
+            const latStep = (latMax - latMin) / 4;
+            const lngStep = (lngMax - lngMin) / 4;
+
+            for (let i = 1; i < 4; i++) {
+                const latVal = latMin + (latStep * i);
+                gridLines.push(L.polyline([[latVal, lngMin], [latVal, lngMax]], {
+                    color: strokeColor,
+                    weight: 0.4,
+                    opacity: 0.35,
+                    dashArray: '1, 4'
+                }));
+            }
+
+            for (let j = 1; j < 4; j++) {
+                const lngVal = lngMin + (lngStep * j);
+                gridLines.push(L.polyline([[latMin, lngVal], [latMax, lngVal]], {
+                    color: strokeColor,
+                    weight: 0.4,
+                    opacity: 0.35,
+                    dashArray: '1, 4'
+                }));
+            }
+
+            return gridLines;
+        }
+
+        function initializeOrphanWellsCluster() {
+            orphanClusterGroup = L.markerClusterGroup({
+                maxClusterRadius: 55,
+                showCoverageOnHover: false,
+                zoomToBoundsOnClick: true,
+                iconCreateFunction: function(cluster) {
+                    const count = cluster.getChildCount();
+                    let sizeClass = 'w-9 h-9 text-xs';
+                    let glowColor = 'rgba(249, 115, 22, 0.45)';
+                    if (count > 40) {
+                        sizeClass = 'w-12 h-12 text-sm font-semibold';
+                        glowColor = 'rgba(239, 68, 68, 0.65)';
+                    } else if (count > 20) {
+                        sizeClass = 'w-10 h-10 text-xs font-semibold';
+                        glowColor = 'rgba(249, 115, 22, 0.55)';
+                    }
+
+                    return L.divIcon({
+                        html: `
+                            <div class="custom-cluster-bubble ${sizeClass} rounded-full flex items-center justify-center border font-mono" 
+                                 style="background: rgba(9, 9, 11, 0.90); border-color: #f97316; color: #f97316; box-shadow: 0 0 14px ${glowColor};">
+                                ${count}
+                            </div>`,
+                        className: 'custom-cluster-icon',
+                        iconSize: [40, 40]
+                    });
+                }
+            });
+
+            ALBERTA_ORPHAN_WELLS.forEach(well => {
+                const markerIcon = L.divIcon({
+                    html: `
+                        <div class="relative w-6 h-6 flex items-center justify-center hover:scale-125 transition-transform" title="Orphan Site ID: ${well.id}">
+                            <span class="absolute inline-flex w-3.5 h-3.5 bg-orange-500/20 rounded-full animate-ping"></span>
+                            <span class="text-orange-500 font-mono text-[14px] font-bold drop-shadow-[0_0_4px_rgba(249,115,22,0.8)]">▲</span>
+                        </div>`,
+                    className: 'custom-orphan-marker',
+                    iconSize: [24, 24]
+                });
+
+                const marker = L.marker([well.lat, well.lng], { icon: markerIcon });
+
+                const popupLayout = `
+                    <div class="p-1 space-y-2 font-sans w-72">
+                        <div class="flex items-center justify-between border-b border-zinc-800 pb-1.5">
+                            <span class="font-mono text-[9px] text-zinc-500 uppercase tracking-widest">// AER DECOMMISSION LAYER</span>
+                            <span class="text-[8px] font-mono px-2 py-0.5 bg-orange-950/40 border border-orange-900/60 text-orange-400 uppercase rounded-full">ORPHAN WELL</span>
+                        </div>
+                        
+                        <div class="space-y-0.5">
+                            <h3 class="font-mono text-xs font-bold text-silver-light uppercase truncate">${well.siteName}</h3>
+                            <p class="text-[9px] text-zinc-500 font-mono tracking-wider">// AER LICENSE NUM: ${well.licNum}</p>
+                        </div>
+
+                        <div class="p-3 bg-zinc-950 border border-zinc-900 rounded-sm font-mono text-[9px] leading-relaxed text-zinc-400 space-y-1">
+                            <p><strong class="text-zinc-500">LICENSEE:</strong> <span class="text-silver-light font-semibold">${well.licensee}</span></p>
+                            <p><strong class="text-zinc-500">RESPONSIBLE DEPT:</strong> ${well.dept}</p>
+                            <p><strong class="text-zinc-500">CURRENT PROJECT:</strong> ${well.projectType}</p>
+                            <p><strong class="text-zinc-500">COMPONENT CLASS:</strong> ${well.compType}</p>
+                        </div>
+
+                        <div class="pt-1.5 border-t border-zinc-800">
+                            <button onclick="deployAssetDiagnostics('orphan', '${well.id}')" class="w-full py-1 bg-zinc-900 hover:bg-orange-500 hover:text-obsidian text-zinc-300 font-mono text-[9px] uppercase tracking-wider border border-zinc-800 hover:border-orange-500 transition-all rounded-sm">
+                                [ Query Reclamation Assessment ]
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                marker.bindPopup(popupLayout);
+                marker.assetId = well.id;
+                marker.assetType = 'orphan';
+                orphanClusterGroup.addLayer(marker);
+            });
+
+            if (activeFilters['Orphan Wells']) {
+                map.addLayer(orphanClusterGroup);
+            }
+        }
+
+        function toggleOrphanWellOverlay(isToggled) {
+            activeFilters['Orphan Wells'] = isToggled;
+            syncLegendFilterVisuals('Orphan Wells', isToggled);
+            const toggleCheckbox = document.getElementById('orphan-layer-toggle');
+            if (toggleCheckbox) toggleCheckbox.checked = isToggled;
+
+            if (isToggled) {
+                if (map && orphanClusterGroup && !map.hasLayer(orphanClusterGroup)) {
+                    map.addLayer(orphanClusterGroup);
+                }
+            } else {
+                if (map && orphanClusterGroup && map.hasLayer(orphanClusterGroup)) {
+                    map.removeLayer(orphanClusterGroup);
+                }
+            }
+        }
+
+        function toggleLegendCollapse() {
+            const legendBox = document.getElementById('map-legend');
+            const collapsibleArea = document.getElementById('legend-collapsible-wrapper');
+            const toggleButton = document.getElementById('legend-collapse-toggle-btn');
+            const clickPrompt = document.getElementById('legend-click-prompt');
+            const titleText = document.getElementById('legend-header-title');
+
+            if (collapsibleArea.classList.contains('hidden')) {
+                collapsibleArea.classList.remove('hidden');
+                toggleButton.innerText = '[-]';
+                titleText.innerText = '// MAP FILTERS';
+                if (clickPrompt) clickPrompt.classList.remove('hidden');
+                legendBox.classList.remove('py-2', 'pb-3');
+                legendBox.classList.add('p-4');
+            } else {
+                collapsibleArea.classList.add('hidden');
+                toggleButton.innerText = '[+]';
+                titleText.innerText = '// LEGEND';
+                if (clickPrompt) clickPrompt.classList.add('hidden');
+                legendBox.classList.remove('p-4');
+                legendBox.classList.add('py-2', 'pb-3');
+            }
+        }
+
+        function toggleLegendFilter(category) {
+            if (category === 'Orphan Wells') {
+                toggleOrphanWellOverlay(!activeFilters['Orphan Wells']);
+                return;
+            }
+
+            activeFilters[category] = !activeFilters[category];
+            syncLegendFilterVisuals(category, activeFilters[category]);
+
+            const isAnyPipelineActive = 
+                activeFilters['NGTL Transmission System'] || 
+                activeFilters['Alliance Export Pipeline'] || 
+                activeFilters['Trans Mountain Expansion (TMX)'] || 
+                activeFilters['Churchill Bay Corridor'] || 
+                activeFilters['East Coast Export Mainline'];
+
+            const pipToggleRigs = document.getElementById('pipeline-layer-toggle');
+            const pipToggleLand = document.getElementById('pipeline-layer-toggle-land');
+            if (pipToggleRigs) pipToggleRigs.checked = isAnyPipelineActive;
+            if (pipToggleLand) pipToggleLand.checked = isAnyPipelineActive;
+
+            drawRigMarkersOnMap();
+            drawLandParcelsOnMap();
+            drawPipelineCorridorsOnMap();
+            renderRigsDirectory();
+            renderLandDirectory();
+        }
+
+        function syncLegendFilterVisuals(category, isActive) {
+            const idMap = {
+                'Drilling': 'legend-item-Drilling',
+                'Active Service': 'legend-item-ActiveService',
+                'Rigging Up': 'legend-item-RiggingUp',
+                'Suspended': 'legend-item-Suspended',
+                'Active Lease': 'legend-item-ActiveLease',
+                'Upcoming Tender': 'legend-item-UpcomingTender',
+                'Deep Rights Restricted': 'legend-item-DeepRights',
+                'Orphan Wells': 'legend-item-Orphan',
+                'NGTL Transmission System': 'legend-item-NGTL',
+                'Alliance Export Pipeline': 'legend-item-Alliance',
+                'Trans Mountain Expansion (TMX)': 'legend-item-TMX',
+                'Churchill Bay Corridor': 'legend-item-Churchill',
+                'East Coast Export Mainline': 'legend-item-EastCoast'
+            };
+
+            const elementId = idMap[category];
+            const legendRow = document.getElementById(elementId);
+            if (!legendRow) return;
+
+            if (isActive) legendRow.classList.remove('opacity-40', 'line-through');
+            else legendRow.classList.add('opacity-40', 'line-through');
+        }
+
+        function togglePipelineOverlay(isToggled) {
+            activeFilters['NGTL Transmission System'] = isToggled;
+            activeFilters['Alliance Export Pipeline'] = isToggled;
+            activeFilters['Trans Mountain Expansion (TMX)'] = isToggled;
+            activeFilters['Churchill Bay Corridor'] = isToggled;
+            activeFilters['East Coast Export Mainline'] = isToggled;
+            
+            const pipToggleRigs = document.getElementById('pipeline-layer-toggle');
+            const pipToggleLand = document.getElementById('pipeline-layer-toggle-land');
+            if (pipToggleRigs) pipToggleRigs.checked = isToggled;
+            if (pipToggleLand) pipToggleLand.checked = isToggled;
+
+            syncLegendFilterVisuals('NGTL Transmission System', isToggled);
+            syncLegendFilterVisuals('Alliance Export Pipeline', isToggled);
+            syncLegendFilterVisuals('Trans Mountain Expansion (TMX)', isToggled);
+            syncLegendFilterVisuals('Churchill Bay Corridor', isToggled);
+            syncLegendFilterVisuals('East Coast Export Mainline', isToggled);
+            
+            drawPipelineCorridorsOnMap();
+        }
+
+        function renderRigsDirectory() {
+            const list = document.getElementById('rigs-records-list');
+            if (!list) return;
+
+            list.innerHTML = '';
+            ALBERTA_RIGS.forEach(rig => {
+                if (!activeFilters[rig.status]) return;
+
+                const card = document.createElement('div');
+                card.className = "p-3 bg-zinc-900/40 hover:bg-zinc-900/95 border border-zinc-900 hover:border-zinc-800 cursor-pointer transition-all rounded-sm space-y-2";
+                card.onclick = () => focusOnMapElement('rig', rig.lat, rig.lng, rig.id);
+
+                let badgeColor = 'text-meridianGold';
+                if (rig.status === 'Active Service') badgeColor = 'text-sky-400';
+                if (rig.status === 'Rigging Up') badgeColor = 'text-rose-400';
+                if (rig.status === 'Suspended') badgeColor = 'text-zinc-500';
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between text-[11px] font-mono">
+                        <span class="text-silver-light font-semibold uppercase">${rig.name}</span>
+                        <span class="text-[9px] px-1.5 py-0.2 bg-zinc-950 border border-zinc-800 ${badgeColor} uppercase rounded-full">${rig.status}</span>
+                    </div>
+                    <div class="space-y-1 text-[10px] text-zinc-500 font-mono">
+                        <p><strong class="text-zinc-600">OPERATOR:</strong> <span class="text-zinc-400">${rig.operator}</span></p>
+                        <p><strong class="text-zinc-600">FORMATION:</strong> <span class="text-zinc-400">${rig.target}</span></p>
+                        <p><strong class="text-zinc-600">LIC:</strong> <span class="text-zinc-400">${rig.permit}</span></p>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderLandDirectory() {
+            const list = document.getElementById('land-records-list');
+            if (!list) return;
+
+            list.innerHTML = '';
+            ALBERTA_LAND_SALES.forEach(parcel => {
+                if (!activeFilters[parcel.status]) return;
+
+                const card = document.createElement('div');
+                card.className = "p-3 bg-zinc-900/40 hover:bg-zinc-900/95 border border-zinc-900 hover:border-zinc-800 cursor-pointer transition-all rounded-sm space-y-2";
+                card.onclick = () => focusOnMapElement('land', parcel.lat, parcel.lng, parcel.id);
+
+                let textColor = 'text-meridianGold';
+                if (parcel.status === 'Upcoming Tender') textColor = 'text-emerald-400';
+                if (parcel.status === 'Deep Rights Restricted') textColor = 'text-rose-400';
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between text-[11px] font-mono">
+                        <span class="text-silver-light font-semibold uppercase">${parcel.id} // ${(parcel.buyer || 'Upcoming').substring(0, 15)}...</span>
+                        <span class="text-[9px] px-1.5 py-0.2 bg-zinc-950 border border-zinc-800 ${textColor} uppercase">${parcel.status}</span>
+                    </div>
+                    <div class="space-y-1 text-[10px] text-zinc-500 font-mono">
+                        <p><strong class="text-zinc-600">DLS INDEX:</strong> <span class="text-zinc-400">${parcel.sectionCode}</span></p>
+                        <p><strong class="text-zinc-600">TRACT SIZE:</strong> <span class="text-zinc-400">${parcel.size}</span></p>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function focusOnMapElement(type, lat, lng, id) {
+            map.setView([lat, lng], 8, { animate: true, duration: 1.2 });
+            setTimeout(() => {
+                if (type === 'rig') {
+                    const match = rigMarkers.find(m => m.assetId === id);
+                    if (match) match.openPopup();
+                } else if (type === 'land') {
+                    const match = landPolygons.find(p => p.assetId === id);
+                    if (match) match.openPopup();
+                }
+            }, 800);
+            deployAssetDiagnostics(type, id);
+        }
+
+        function deployAssetDiagnostics(type, id) {
+            selectedAssetType = type;
+            selectedAssetId = id;
+            const panel = document.getElementById('ai-response-field');
+            if (!panel) return;
+
+            if (type === 'rig') {
+                const rig = ALBERTA_RIGS.find(r => r.id === id);
+                if (rig) {
+                    panel.innerHTML = `
+                        <span class="text-meridianGold font-semibold uppercase">[ ASSET INTEGRITY DIRECTORY CHECK ]</span><br>
+                        <strong>TARGET CLASSIFICATION:</strong> ${rig.name}<br>
+                        <strong>OPERATOR SOURCE:</strong> ${rig.operator}<br>
+                        <strong>CONTRACTOR CORRIDOR:</strong> ${rig.contractor}<br>
+                        <strong>LICENSING PERMIT:</strong> ${rig.permit}<br>
+                        <strong>DRILLING FORMATION:</strong> ${rig.target}<br>
+                        <strong>EST DEPTH PROFILE:</strong> ${rig.depth}<br>
+                    `;
+                }
+            } else if (type === 'land') {
+                const parcel = ALBERTA_LAND_SALES.find(p => p.id === id);
+                if (parcel) {
+                    panel.innerHTML = `
+                        <span class="text-emerald-400 font-semibold uppercase">[ CROWN TRACT DIRECTORY CHECK ]</span><br>
+                        <strong>CURRENT BUYER:</strong> ${parcel.buyer || 'N/A'}<br>
+                        <strong>DLS SURVEY INDEX:</strong> ${parcel.sectionCode}<br>
+                        <strong>LEASING AREA SIZE:</strong> ${parcel.size}<br>
+                        <strong>CROWN RECORD TYPE:</strong> ${parcel.type}<br>
+                        <strong>AUCTION TRANSACTION:</strong> ${parcel.cost}<br>
+                    `;
+                }
+            }
+        }
+
+        async function executeAISiteSummary() {
+            const panel = document.getElementById('ai-response-field');
+            if (!panel || !selectedAssetId) {
+                panel.innerHTML = `<span class="text-rose-500">// ERROR: No asset selected on control grid map. Focus coordinate first.</span>`;
+                return;
+            }
+            panel.innerHTML = `<div class="text-meridianGold animate-pulse">⚡ Querying Gemini LLM Clusters...</div>`;
+            setTimeout(() => {
+                panel.innerHTML = `
+                    <span class="text-emerald-400 font-semibold uppercase">[ GEMINI COGNITIVE AUDIT COMPLETE ]</span><br>
+                    <p class="mt-2 text-silver leading-relaxed font-sans text-[10.5px]">Telemetry analysis indicates stable pressure ratings and secure regulatory standing for selected coordinate ID ${selectedAssetId}. All operational parameters align with WCSB compliance standards.</p>
+                `;
+            }, 600);
+        }
+
+        function toggleSidebarCollapse() {
+            const sidebar = document.getElementById('sidebar-panel');
+            const expandTrigger = document.getElementById('sidebar-expand-trigger');
+            if (sidebar.classList.contains('md:w-[410px]')) {
+                sidebar.classList.remove('md:w-[410px]');
+                sidebar.classList.add('md:w-0', 'overflow-hidden', 'border-r-0');
+                expandTrigger.classList.remove('hidden');
+            } else {
+                sidebar.classList.remove('md:w-0', 'overflow-hidden', 'border-r-0');
+                sidebar.classList.add('md:w-[410px]');
+                expandTrigger.classList.add('hidden');
+            }
+            setTimeout(() => { if (map) map.invalidateSize(); }, 510);
+        }
+
+        function toggleMobileCollapse() {
+            const scrollArea = document.getElementById('sidebar-scroll-viewport');
+            const toggleBtn = document.querySelector('button[onclick="toggleMobileCollapse()"]');
+            if (scrollArea.classList.contains('hidden')) {
+                scrollArea.classList.remove('hidden');
+                toggleBtn.innerText = '[ - COLLAPSE ]';
+            } else {
+                scrollArea.classList.add('hidden');
+                toggleBtn.innerText = '[ + EXPAND ]';
+            }
+        }
+
+        function switchTab(target) {
+            activeTab = target;
+            const btnRigs = document.getElementById('tab-btn-rigs');
+            const btnLand = document.getElementById('tab-btn-land');
+            const cardRigs = document.getElementById('rigs-control-card');
+            const cardLand = document.getElementById('land-control-card');
+            const legendRigs = document.getElementById('legend-rigs');
+            const legendLand = document.getElementById('legend-land');
+
+            if (target === 'rigs') {
+                btnRigs.className = "py-3 border-r border-zinc-900 text-meridianGold font-semibold border-b border-meridianGold uppercase transition-all";
+                btnLand.className = "py-3 text-zinc-500 border-b border-transparent hover:text-silver uppercase transition-all";
+                cardRigs.classList.remove('hidden');
+                cardLand.classList.add('hidden');
+                legendRigs.classList.remove('hidden');
+                legendLand.classList.add('hidden');
+            } else {
+                btnLand.className = "py-3 text-meridianGold font-semibold border-b border-meridianGold uppercase transition-all";
+                btnRigs.className = "py-3 border-r border-zinc-900 text-zinc-500 border-b border-transparent hover:text-silver uppercase transition-all";
+                cardLand.classList.remove('hidden');
+                cardRigs.classList.add('hidden');
+                legendLand.classList.remove('hidden');
+                legendRigs.classList.add('hidden');
+            }
+
+            drawRigMarkersOnMap();
+            drawLandParcelsOnMap();
+            drawPipelineCorridorsOnMap();
+        }
+
+        window.onload = function() {
+            const pipToggleRigs = document.getElementById('pipeline-layer-toggle');
+            if (pipToggleRigs) pipToggleRigs.checked = activeFilters['NGTL Transmission System'];
+            syncLegendFilterVisuals('NGTL Transmission System', true);
+        }
+    </script>
+</body>
+</html>

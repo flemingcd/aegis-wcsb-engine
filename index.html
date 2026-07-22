@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-N3NC9S8W');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5th Meridian | High-Impact Technical Consulting</title>
+    <link rel="icon" href="image_0.png" type="image/png">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter for clean readability & JetBrains Mono for technical accents -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                screens: {
+                    'xs': '400px',
+                    'sm': '640px',
+                    'md': '768px',
+                    'lg': '1024px',
+                    'xl': '1280px',
+                    '2xl': '1536px',
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#09090b',
+                        charcoal: '#18181b',
+                        meridianGold: {
+                            light: '#fef08a', // amber-200
+                            DEFAULT: '#fbbf24', // amber-400
+                            dark: '#d97706', // amber-600
+                        },
+                        silver: {
+                            light: '#f4f4f5',
+                            DEFAULT: '#d4d4d8',
+                            dark: '#a1a1aa',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* High-contrast black & white styling for photography */
+        .landscape-bw {
+            filter: grayscale(100%) contrast(160%) brightness(75%);
+            mix-blend-mode: luminosity;
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .landscape-bw:hover {
+            filter: grayscale(100%) contrast(180%) brightness(85%);
+        }
+        
+        /* Custom golden line glow effect */
+        .gold-glow {
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
+        
+        /* Silver text gradient */
+        .text-silver-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Scroll reveal custom timing settings */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Golden line drawing animation sequence */
+        @keyframes drawLine {
+            from { height: 0%; }
+            to { height: 100%; }
+        }
+        .animate-draw-line {
+            animation: drawLine 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-obsidian text-zinc-300 font-sans selection:bg-meridianGold/30 selection:text-white overflow-x-hidden relative">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N3NC9S8W"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="w-full max-w-[1440px] mx-auto min-h-screen flex flex-col justify-between relative bg-obsidian">
+
+        <!-- Global Golden Meridian Line -->
+        <div class="hidden lg:block absolute left-1/4 top-0 w-[1px] bg-gradient-to-b from-transparent via-meridianGold/40 to-transparent pointer-events-none z-0">
+            <div class="w-full bg-gradient-to-b from-meridianGold/70 to-transparent animate-draw-line"></div>
+        </div>
+
+        <!-- Header Navigation -->
+        <header class="sticky top-0 z-50 bg-obsidian/80 backdrop-blur-md border-b border-zinc-800/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="relative w-8 h-8 flex items-center justify-center">
+                        <div class="absolute inset-0 border border-zinc-800 rounded-sm"></div>
+                        <div class="w-[1px] h-full bg-gradient-to-b from-meridianGold-light via-meridianGold to-meridianGold-dark gold-glow"></div>
+                    </div>
+                    <span class="font-mono tracking-widest text-silver-light text-sm font-semibold uppercase">5th Meridian</span>
+                </div>
+                <nav class="hidden md:flex items-center space-x-8 text-xs font-mono tracking-wider">
+                    <a href="#about" class="hover:text-meridianGold transition-colors">01// ALIGNMENT</a>
+                    <a href="#services" class="hover:text-meridianGold transition-colors">02// CAPABILITIES</a>
+                    <a href="#grid-showcase" class="hover:text-meridianGold transition-colors">02.5// 5M GRID</a>
+                    <a href="5m_grid_disruption_blog_post.html" class="hover:text-meridianGold transition-colors">02.7// INSIGHTS</a>
+                    <a href="#contact" class="hover:text-meridianGold transition-colors">03// INITIATE</a>
+                    <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-zinc-400 hover:text-meridianGold transition-colors">[ LINKEDIN ↗ ]</a>
+                </nav>
+                <button onclick="smartMailto('RE: General Engagement Inquiry', 'Hi 5th Meridian Team,\n\nI\'d like to discuss partnering with 5th Meridian for an upcoming project. Let\'s set up a technical fit assessment.\n\nBest regards,')" class="px-4 py-2 border border-zinc-700 text-xs font-mono text-silver-light hover:border-meridianGold/80 hover:text-meridianGold transition-all duration-300 bg-transparent">
+                    [ START INQUIRY ]
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="relative min-h-[90vh] flex items-center py-16 sm:py-24 px-4 sm:px-6 lg:px-8 z-10 overflow-hidden">
+            <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <!-- Left Copy -->
+                <div class="lg:col-span-7 space-y-8 z-10">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-sm">
+                        <span class="w-1.5 h-1.5 rounded-full bg-meridianGold animate-pulse"></span>
+                        <span class="text-[10px] font-mono tracking-widest text-silver-dark uppercase">Latitude of Execution</span>
+                    </div>
+                    <h1 class="text-3.5xl xs:text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight text-silver-light leading-none">
+                        Unconventional Alignment.<br>
+                        <span class="font-semibold text-silver-gradient">Pragmatic Scale.</span>
+                    </h1>
+                    <p class="text-sm sm:text-base lg:text-lg text-zinc-400 max-w-xl leading-relaxed">
+                        We engineer secure data foundations, automated operations, and production-ready custom AI integrations. No fluff, no enterprise debt. Just clean, absolute clarity.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 pt-4">
+                        <button onclick="smartMailto('RE: General Engagement Inquiry', 'Hi 5th Meridian Team,\n\nI would like to initiate an engagement with you. Let\'s discuss how we can align our operations and tech stack.\n\nBest regards,')" class="px-8 py-4 bg-zinc-900 border border-meridianGold hover:bg-meridianGold hover:text-obsidian transition-all duration-300 font-mono text-sm tracking-wider text-meridianGold flex items-center space-x-3 group shadow-lg shadow-meridianGold/5 text-left">
+                            <span>INITIATE ENGAGEMENT</span>
+                            <span class="transform group-hover:translate-x-1 transition-transform">→</span>
+                        </button>
+                        <a href="#grid-showcase" class="px-6 py-4 text-xs font-mono tracking-widest text-zinc-400 hover:text-meridianGold transition-colors self-center sm:self-auto border border-zinc-800 bg-zinc-950/50">
+                            [ EXPLORE 5M GRID ]
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Photo Visual -->
+                <div class="lg:col-span-5 relative flex justify-center items-center">
+                    <div class="relative w-full max-w-xs sm:max-w-sm aspect-[4/5] overflow-hidden border border-zinc-800 p-2 bg-zinc-950/40">
+                        <div class="w-full h-full overflow-hidden relative">
+                            <img 
+                                id="hero-landscape"
+                                src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800" 
+                                alt="Flipped foothills landscape" 
+                                class="w-full h-full object-cover scale-y-[-1] rotate-12 scale-150 landscape-bw origin-center will-change-transform"
+                            >
+                            <div class="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-obsidian/80 mix-blend-multiply"></div>
+                        </div>
+                        <div class="absolute top-0 bottom-0 left-[45%] w-[2px] bg-gradient-to-b from-transparent via-meridianGold to-transparent gold-glow z-20"></div>
+                    </div>
+                    <div class="absolute bottom-6 right-6 font-mono text-[9px] tracking-widest text-zinc-600 uppercase bg-obsidian px-2 py-1 border border-zinc-900">
+                        Fig. 01 // 114° W (Change Perspective)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Divider -->
+        <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent relative">
+            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-obsidian border border-zinc-800 flex items-center justify-center">
+                <div class="w-1.5 h-1.5 bg-meridianGold rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- About Section (01 // ALIGNMENT) -->
+        <section id="about" class="reveal py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+                <div class="lg:col-span-4 space-y-4">
+                    <span class="font-mono text-xs text-meridianGold tracking-widest block">01 // ALIGNMENT</span>
+                    <h2 class="text-3xl font-light text-silver-light tracking-tight">The 5th Meridian Concept</h2>
+                    <div class="w-12 h-[1px] bg-meridianGold mt-4"></div>
+                </div>
+
+                <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8 text-zinc-400 leading-relaxed text-sm sm:text-base">
+                    <div class="space-y-4">
+                        <p>
+                            In surveying, a meridian is a line of reference, a standard for coordinate alignment. The 5th Meridian is our standard. 
+                        </p>
+                        <p>
+                            Modern technology is saturated with noise, hype, and over-engineered architecture. We exist to anchor your operations to what actually works—building structured digital corridors where data flows with absolute purpose.
+                        </p>
+                    </div>
+                    <div class="relative min-h-[220px] border border-zinc-800 p-2 bg-zinc-950 overflow-hidden flex items-center justify-center">
+                        <img 
+                            id="about-landscape"
+                            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=600" 
+                            alt="High contrast mountains" 
+                            class="absolute inset-0 w-full h-full object-cover landscape-bw rotate-[-6deg] scale-150 origin-center will-change-transform"
+                        >
+                        <div class="absolute inset-0 bg-black/60 z-10"></div>
+                        <div class="relative z-20 text-center font-mono text-[10px] text-zinc-400 tracking-wider p-4 border border-zinc-800/80 bg-obsidian/90">
+                            "The distance between design and reality is measured in execution."
+                        </div>
+                        <div class="absolute top-0 bottom-0 left-[60%] w-[1px] bg-gradient-to-b from-transparent via-meridianGold/60 to-transparent rotate-[25deg] pointer-events-none"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Divider -->
+        <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent"></div>
+
+        <!-- Services Section (02 // CAPABILITIES) -->
+        <section id="services" class="reveal py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10 bg-zinc-950/20">
+            <div class="max-w-7xl mx-auto space-y-12 sm:space-y-16">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div class="space-y-4">
+                        <span class="font-mono text-xs text-meridianGold tracking-widest block">02 // CAPABILITIES</span>
+                        <h2 class="text-3xl font-light text-silver-light tracking-tight">Structured Pillars of Service</h2>
+                    </div>
+                    <p class="text-sm font-mono text-zinc-500 max-w-sm tracking-wide">
+                        // Built for high utility. Engineered to transition ownership entirely to your internal team.
+                    </p>
+                </div>
+
+                <!-- Capabilities Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Pillar 1 -->
+                    <div class="border border-zinc-800/80 bg-zinc-900/20 p-6 sm:p-8 space-y-6 relative hover:border-zinc-700/80 transition-all duration-300">
+                        <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-meridianGold/20 to-transparent"></div>
+                        <span class="font-mono text-xs text-zinc-500">[ PILLAR_01 ]</span>
+                        <h3 class="text-lg sm:text-xl font-medium text-silver-light">AI Pipeline Integration</h3>
+                        <p class="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                            We move organizations past basic ChatGPT APIs. We build functioning, secure, localized LLM systems and custom tools (utilizing n8n and Bubble) integrated directly with your native databases.
+                        </p>
+                        <div class="pt-4 border-t border-zinc-800/60 font-mono text-[10px] text-zinc-500 flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">n8n Workflow</span>
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">Custom LLM Agents</span>
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">Vector Databases</span>
+                        </div>
+                    </div>
+
+                    <!-- Pillar 2 -->
+                    <div class="border border-zinc-800/80 bg-zinc-900/20 p-6 sm:p-8 space-y-6 relative hover:border-zinc-700/80 transition-all duration-300">
+                        <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-meridianGold/20 to-transparent"></div>
+                        <span class="font-mono text-xs text-zinc-500">[ PILLAR_02 ]</span>
+                        <h3 class="text-lg sm:text-xl font-medium text-silver-light">Data Governance & SSOT</h3>
+                        <p class="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                            Establish a true Single Source of Truth (SSOT). We cleanly reconstruct fractured, dirty database silos into highly secure, compliant, and normalized environments capable of scaling.
+                        </p>
+                        <div class="pt-4 border-t border-zinc-800/60 font-mono text-[10px] text-zinc-500 flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">SSOT Architecture</span>
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">Data Cleanup</span>
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">API Design</span>
+                        </div>
+                    </div>
+
+                    <!-- Pillar 3 -->
+                    <div class="border border-zinc-800/80 bg-zinc-900/20 p-6 sm:p-8 space-y-6 relative hover:border-zinc-700/80 transition-all duration-300">
+                        <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-meridianGold/20 to-transparent"></div>
+                        <span class="font-mono text-xs text-zinc-500">[ PILLAR_03 ]</span>
+                        <h3 class="text-lg sm:text-xl font-medium text-silver-light">Operational Analytics</h3>
+                        <p class="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                            Say goodbye to standard messy spreadsheets. We build hyper-focused, beautifully organized BI dashboards optimized specifically for functional decisions, not aesthetic vanity.
+                        </p>
+                        <div class="pt-4 border-t border-zinc-800/60 font-mono text-[10px] text-zinc-500 flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">Real-Time BI</span>
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">Tailored UI/UX</span>
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">Custom Reports</span>
+                        </div>
+                    </div>
+
+                    <!-- Pillar 4 -->
+                    <div class="border border-zinc-800/80 bg-zinc-900/20 p-6 sm:p-8 space-y-6 relative hover:border-zinc-700/80 transition-all duration-300">
+                        <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-meridianGold/20 to-transparent"></div>
+                        <span class="font-mono text-xs text-zinc-500">[ PILLAR_04 ]</span>
+                        <h3 class="text-lg sm:text-xl font-medium text-silver-light">Workflow Automation</h3>
+                        <p class="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                            We automate high-risk, manual operational bottlenecks. We build automated data pipelines, alert systems, and ingestion workflows that quietly save your team hundreds of manual hours every month.
+                        </p>
+                        <div class="pt-4 border-t border-zinc-800/60 font-mono text-[10px] text-zinc-500 flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">No-Code / Low-Code</span>
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">System Syncs</span>
+                            <span class="px-2 py-1 bg-zinc-900 border border-zinc-800">Integrations</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Divider -->
+        <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent"></div>
+
+        <!-- SECTION: 5M GRID SHOWCASE (02.5 // PROTOTYPE) -->
+        <section id="grid-showcase" class="reveal py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10 bg-zinc-950 border-b border-zinc-900">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Details -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-sm">
+                        <span class="w-1.5 h-1.5 rounded-full bg-meridianGold animate-pulse"></span>
+                        <span class="text-[10px] font-mono tracking-widest text-silver-dark uppercase">Interactive Spatial Prototype</span>
+                    </div>
+                    <span class="font-mono text-xs text-meridianGold tracking-widest block">// 02.5 PROTOTYPE SHOWCASE</span>
+                    <h2 class="text-3xl sm:text-4xl font-light text-silver-light tracking-tight">
+                        5M Grid | <span class="text-silver-gradient">WCSB Spatial Intelligence</span>
+                    </h2>
+                    <p class="text-sm sm:text-base text-zinc-400 leading-relaxed">
+                        Legacy enterprise platforms charge millions to gatekeep public operational energy datasets. **5M Grid** is a low-cost, high-velocity counter-proof—built using modern "vibe coding" workflows to prove that specialized spatial intelligence can be deployed in days, not years.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs pt-2">
+                        <div class="p-3 border border-zinc-800/80 bg-zinc-900/40">
+                            <span class="text-meridianGold block mb-1">■ DLS & LSD Vector Grid</span>
+                            <span class="text-zinc-500 text-[11px]">Subdivided 16-division section overlays across Western Canada.</span>
+                        </div>
+                        <div class="p-3 border border-zinc-800/80 bg-zinc-900/40">
+                            <span class="text-meridianGold block mb-1">■ Cluster Hazard Analytics</span>
+                            <span class="text-zinc-500 text-[11px]">Real-time marker clustering for 180+ Alberta orphan well sites.</span>
+                        </div>
+                        <div class="p-3 border border-zinc-800/80 bg-zinc-900/40">
+                            <span class="text-meridianGold block mb-1">■ Corridor Financial Telemetry</span>
+                            <span class="text-zinc-500 text-[11px]">TMX, Alliance, and NGTL trunkline throughput valuations.</span>
+                        </div>
+                        <div class="p-3 border border-zinc-800/80 bg-zinc-900/40">
+                            <span class="text-meridianGold block mb-1">■ Cognitive AI Auditing</span>
+                            <span class="text-zinc-500 text-[11px]">Integrated Gemini agent for instant subsurface geological reports.</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                        <a href="https://5th-meridian.com/5mgrid" target="_blank" rel="noopener noreferrer" class="px-8 py-4 bg-zinc-900 border border-meridianGold hover:bg-meridianGold hover:text-obsidian transition-all duration-300 font-mono text-xs tracking-wider text-meridianGold flex items-center justify-center space-x-3 group text-center">
+                            <span>LAUNCH 5M GRID PORTAL</span>
+                            <span class="transform group-hover:translate-x-1 transition-transform">↗</span>
+                        </a>
+                        <a href="5m_grid_disruption_blog_post.html" class="px-8 py-4 border border-zinc-800 hover:border-meridianGold font-mono text-xs tracking-wider text-zinc-400 hover:text-meridianGold transition-all duration-300 flex items-center justify-center text-center">
+                            [ READ STRATEGIC DISRUPTION ANALYSIS ]
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Visual Terminal Card -->
+                <div class="lg:col-span-5">
+                    <div class="border border-zinc-800 bg-obsidian p-6 space-y-4 font-mono relative overflow-hidden shadow-2xl">
+                        <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
+                            </div>
+                            <span class="text-[10px] text-zinc-500">5M_GRID_TELEMETRY.SYS</span>
+                        </div>
+                        <div class="space-y-2 text-[11px] text-zinc-400">
+                            <p class="text-emerald-400">[SYSTEM READY] WCSB Coordinate Layer Active</p>
+                            <p>> Parsing DLS Meridian: 5th Meridian (114° W)</p>
+                            <p>> Crown Leases Loaded: 50 Tenders (DRRZD Format)</p>
+                            <p>> Active Rig Roster: 15 Platforms Synced</p>
+                            <p>> Transmission Routes: TMX / Alliance / Enbridge</p>
+                            <div class="p-3 bg-zinc-900 border border-zinc-800/80 text-[10px] text-zinc-300 mt-4">
+                                <span class="text-meridianGold font-semibold">AI COGNITIVE AUDIT //</span>
+                                <p class="text-zinc-400 mt-1">"Duvernay shale tender parcel 05-19-054 shows high condensate ratio potential adjacent to active pipeline infrastructure."</p>
+                            </div>
+                        </div>
+                        <div class="pt-2 text-right">
+                            <span class="text-[9px] text-zinc-600 uppercase tracking-widest">// STATUS: OPERATIONAL</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Contact / Initiate Section (03 // INITIATE) -->
+        <section id="contact" class="reveal py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+                
+                <!-- Left Info Panel -->
+                <div class="lg:col-span-5 space-y-8">
+                    <div class="space-y-4">
+                        <span class="font-mono text-xs text-meridianGold tracking-widest block">03 // INITIATE</span>
+                        <h2 class="text-3xl font-light text-silver-light tracking-tight">Establish Contact</h2>
+                        <p class="text-zinc-400 text-sm leading-relaxed max-w-sm">
+                            To protect project momentum, we select a limited cohort of partner engagements every quarter. Let us know what bottlenecks you are tackling, and we will set up a technical fit assessment.
+                        </p>
+                    </div>
+
+                    <!-- Footer foothills landscape image with parallax -->
+                    <div class="relative w-full aspect-video border border-zinc-800 p-1 bg-zinc-950 overflow-hidden">
+                        <img 
+                            id="footer-landscape"
+                            src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=600" 
+                            alt="High contrast foothills at odd angle" 
+                            class="w-full h-full object-cover landscape-bw rotate-[180deg] scale-y-[-1] scale-150 origin-center will-change-transform"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-r from-obsidian to-transparent opacity-80 mix-blend-multiply"></div>
+                        <div class="absolute left-0 right-0 top-[60%] h-[1px] bg-gradient-to-r from-transparent via-meridianGold/80 to-transparent gold-glow"></div>
+                    </div>
+                </div>
+
+                <!-- Right Options Panel -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="p-4 sm:p-6 border border-zinc-800 bg-zinc-900/10 rounded-sm space-y-4">
+                        <h3 class="font-mono text-xs text-silver-light font-semibold uppercase tracking-widest">// Direct Project Tracks</h3>
+                        <p class="text-xs text-zinc-500">Select a direct engagement focus area below to launch a pre-formatted email template from your client or browser.</p>
+                    </div>
+
+                    <!-- Option Card 1: AI & Automation -->
+                    <button onclick="smartMailto('RE: AI & Workflow Automation', 'Hi 5th Meridian Team,\n\nI\'m looking to automate some of our operations and explore how we can safely integrate AI pipelines into our workflow. Let\'s discuss.\n\nBest regards,')" 
+                       class="w-full block text-left p-6 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-meridianGold/60 group transition-all duration-300 relative overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <div class="space-y-1 pr-4">
+                                <span class="font-mono text-[10px] text-zinc-500">[ INTERFACE_TRACK_01 ]</span>
+                                <h4 class="text-base font-medium text-silver-light group-hover:text-meridianGold transition-colors">AI & Workflow Automation</h4>
+                                <p class="text-xs text-zinc-400">Deploy secure custom pipelines, API integrations, and internal AI structures.</p>
+                            </div>
+                            <span class="text-xl text-zinc-600 group-hover:text-meridianGold transform group-hover:translate-x-1 transition-all flex-shrink-0">↗</span>
+                        </div>
+                    </button>
+
+                    <!-- Option Card 2: Data & Governance -->
+                    <button onclick="smartMailto('RE: Data Governance & Single Source of Truth', 'Hi 5th Meridian Team,\n\nOur company\'s data is highly siloed and needs a unified data governance strategy. Let\'s talk about setting up a single source of truth.\n\nBest regards,')" 
+                       class="w-full block text-left p-6 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-meridianGold/60 group transition-all duration-300 relative overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <div class="space-y-1 pr-4">
+                                <span class="font-mono text-[10px] text-zinc-500">[ INTERFACE_TRACK_02 ]</span>
+                                <h4 class="text-base font-medium text-silver-light group-hover:text-meridianGold transition-colors">Data Governance & Single Source of Truth</h4>
+                                <p class="text-xs text-zinc-400">Clean database structures, migration blueprints, and secure operational compliance.</p>
+                            </div>
+                            <span class="text-xl text-zinc-600 group-hover:text-meridianGold transform group-hover:translate-x-1 transition-all flex-shrink-0">↗</span>
+                        </div>
+                    </button>
+
+                    <!-- Option Card 3: Custom Integration / General Inquiry -->
+                    <button onclick="smartMailto('RE: Custom Technical Consultation', 'Hi 5th Meridian Team,\n\nI\'d like to discuss a unique operational or technical bottleneck our business is facing.\n\nBest regards,')" 
+                       class="w-full block text-left p-6 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-meridianGold/60 group transition-all duration-300 relative overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <div class="space-y-1 pr-4">
+                                <span class="font-mono text-[10px] text-zinc-500">[ INTERFACE_TRACK_03 ]</span>
+                                <h4 class="text-base font-medium text-silver-light group-hover:text-meridianGold transition-colors">Custom Technical Consultation</h4>
+                                <p class="text-xs text-zinc-400">Describe a complex operational bottleneck or architecture puzzle you need solved.</p>
+                            </div>
+                            <span class="text-xl text-zinc-600 group-hover:text-meridianGold transform group-hover:translate-x-1 transition-all flex-shrink-0">↗</span>
+                        </div>
+                    </button>
+
+                    <div class="text-center pt-2 space-y-1">
+                        <p class="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">// Direct Email: connect@5th-meridian.com</p>
+                        <p class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">// LinkedIn: <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-meridianGold hover:underline">linkedin.com/in/chris-fleming-a644182/</a></p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-zinc-950 py-12 px-6 border-t border-zinc-900 relative z-10">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-zinc-500 font-mono">
+                <div class="flex items-center space-x-2">
+                    <span class="text-meridianGold">♦</span>
+                    <span>© 2026 5th Meridian. All Rights Reserved.</span>
+                </div>
+                <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
+                    <span>COORD: 51.0447° N, 114.0719° W</span>
+                    <span class="hidden sm:inline text-zinc-700">|</span>
+                    <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-zinc-400 hover:text-meridianGold transition-colors">[ LINKEDIN PROFILE ]</a>
+                    <span class="hidden sm:inline text-zinc-700">|</span>
+                    <span>ALIGNMENT CONFIRMED</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Smart Email Fallback & Animations Script -->
+    <script>
+        // 1. Smart Mailto Fallback Engine
+        function smartMailto(subject, body) {
+            const toEmail = "connect@5th-meridian.com";
+            const encodedSubject = encodeURIComponent(subject);
+            const encodedBody = encodeURIComponent(body);
+            
+            const mailtoUrl = `mailto:${toEmail}?subject=${encodedSubject}&body=${encodedBody}`;
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${toEmail}&su=${encodedSubject}&body=${encodedBody}`;
+            
+            let isRedirected = false;
+            
+            const handleBlur = () => {
+                isRedirected = true;
+                window.removeEventListener('blur', handleBlur);
+            };
+            window.addEventListener('blur', handleBlur);
+            
+            window.location.href = mailtoUrl;
+            
+            setTimeout(() => {
+                window.removeEventListener('blur', handleBlur);
+                if (!isRedirected) {
+                    window.open(gmailUrl, '_blank');
+                }
+            }, 500);
+        }
+
+        // 2. Hardware-Accelerated Parallax Scroll Engine
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.pageYOffset;
+            
+            const heroImg = document.getElementById('hero-landscape');
+            if (heroImg) {
+                heroImg.style.transform = `scale-y(-1) rotate(12deg) scale(1.5) translateY(${scrollPos * 0.08}px)`;
+            }
+
+            const aboutImg = document.getElementById('about-landscape');
+            if (aboutImg) {
+                const rect = aboutImg.getBoundingClientRect();
+                const viewHeight = window.innerHeight;
+                if (rect.top < viewHeight && rect.bottom > 0) {
+                    const offset = (viewHeight - rect.top) * 0.05;
+                    aboutImg.style.transform = `rotate(-6deg) scale(1.5) translateY(${offset}px)`;
+                }
+            }
+
+            const footerImg = document.getElementById('footer-landscape');
+            if (footerImg) {
+                const rect = footerImg.getBoundingClientRect();
+                const viewHeight = window.innerHeight;
+                if (rect.top < viewHeight && rect.bottom > 0) {
+                    const offset = (viewHeight - rect.top) * 0.04;
+                    footerImg.style.transform = `rotate(180deg) scale-y(-1) scale(1.5) translateY(${offset}px)`;
+                }
+            }
+        });
+
+        // 3. High-Performance IntersectionObserver for Fade reveals
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const revealCallback = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver(revealCallback, observerOptions);
+            const targets = document.querySelectorAll('.reveal');
+            targets.forEach(target => observer.observe(target));
+        });
+    </script>
+</body>
+</html>
