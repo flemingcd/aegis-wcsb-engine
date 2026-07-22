@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth h-full">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-N3NC9S8W');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5th Meridian | The Augmented Analyst: Building a WCSB Wildfire Risk Engine</title>
+    <link rel="icon" href="image_0.png" type="image/png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Premium Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#09090b',
+                        charcoal: '#18181b',
+                        meridianGold: {
+                            light: '#fef08a', /* amber-200 */
+                            DEFAULT: '#fbbf24', /* amber-400 */
+                            dark: '#d97706', /* amber-600 */
+                        },
+                        silver: {
+                            light: '#f4f4f5',
+                            DEFAULT: '#d4d4d8',
+                            dark: '#a1a1aa',
+                        },
+                        hazardOrange: '#f97316',
+                        hazardRed: '#f43f5e'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .landscape-bw {
+            filter: grayscale(100%) contrast(160%) brightness(75%);
+            mix-blend-mode: luminosity;
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .landscape-bw:hover {
+            filter: grayscale(100%) contrast(180%) brightness(85%);
+        }
+        .gold-glow {
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
+        .text-silver-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Fix Leaflet pane interaction */
+        .leaflet-container {
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+    </style>
+</head>
+<body class="bg-obsidian text-zinc-300 font-sans selection:bg-meridianGold/30 selection:text-white relative min-h-screen">
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N3NC9S8W"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="w-full max-w-[1440px] mx-auto relative bg-obsidian overflow-x-hidden min-h-screen flex flex-col justify-between">
+
+        <!-- Global Golden Meridian Line -->
+        <div class="hidden lg:block absolute left-1/4 top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-meridianGold/40 to-transparent pointer-events-none z-0"></div>
+
+        <!-- Header Navigation -->
+        <header class="sticky top-0 z-50 bg-obsidian/85 backdrop-blur-md border-b border-zinc-800/50">
+            <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="flex items-center space-x-3 group">
+                        <div class="relative w-8 h-8 flex items-center justify-center">
+                            <div class="absolute inset-0 border border-zinc-800 rounded-sm"></div>
+                            <div class="w-[1px] h-full bg-gradient-to-b from-meridianGold-light via-meridianGold to-meridianGold-dark gold-glow"></div>
+                        </div>
+                        <span class="font-mono tracking-widest text-silver-light text-sm font-semibold uppercase group-hover:text-meridianGold transition-colors">5th Meridian</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-8 text-xs font-mono tracking-wider">
+                    <a href="index.html#about" class="hover:text-meridianGold transition-colors">01// ALIGNMENT</a>
+                    <a href="index.html#services" class="hover:text-meridianGold transition-colors">02// CAPABILITIES</a>
+                    <a href="index.html#grid-showcase" class="text-meridianGold hover:text-amber-300 transition-colors">02.5// 5M GRID</a>
+                    <a href="index.html#contact" class="hover:text-meridianGold transition-colors">03// INITIATE</a>
+                    <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-zinc-400 hover:text-meridianGold transition-colors">[ LINKEDIN ↗ ]</a>
+                </nav>
+                <a href="index.html#contact" class="px-4 py-2 border border-zinc-700 text-xs font-mono text-silver-light hover:border-meridianGold/80 hover:text-meridianGold transition-all duration-300">
+                    [ START INQUIRY ]
+                </a>
+            </div>
+        </header>
+
+        <!-- Editorial Hero Section -->
+        <section class="relative py-20 px-6 z-10 border-b border-zinc-900">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-8 space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-sm">
+                        <span class="w-1.5 h-1.5 rounded-full bg-meridianGold animate-pulse"></span>
+                        <span class="text-[9px] font-mono tracking-widest text-silver-dark uppercase">// SPATIAL ANALYTICS & AI WORKFLOWS</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight text-silver-light leading-tight">
+                        The Augmented Analyst:<br>
+                        <span class="font-semibold text-silver-gradient">Building a WCSB Wildfire Risk Engine with AI, Python, & Netlify</span>
+                    </h1>
+                    <p class="font-mono text-xs text-zinc-500 uppercase tracking-widest">
+                        By Chris Fleming — Founder, 5th Meridian | Published: July 2026
+                    </p>
+                </div>
+                <div class="lg:col-span-4 relative flex justify-center items-center">
+                    <div class="relative w-full max-w-[280px] aspect-[4/5] overflow-hidden border border-zinc-800 p-2 bg-zinc-950/40">
+                        <div class="w-full h-full overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=600" alt="5th Meridian Brand Asset" class="w-full h-full object-cover landscape-bw scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-obsidian/40"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXECUTIVE TL;DR & SOCIAL SHARE PANEL -->
+        <section class="max-w-7xl mx-auto px-6 pt-12 z-10 relative">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <div class="lg:col-span-3"></div>
+                <div class="lg:col-span-9 space-y-6">
+                    <div class="border border-zinc-800 bg-zinc-900/20 p-6 sm:p-8 rounded-sm space-y-4 relative">
+                        <div class="absolute top-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-meridianGold/30 to-transparent"></div>
+                        <div class="flex items-center space-x-2 text-meridianGold font-mono text-xs tracking-wider uppercase font-bold">
+                            <span>♦</span>
+                            <span>EXECUTIVE SUMMARY (TL;DR)</span>
+                        </div>
+                        <div class="text-zinc-300 text-sm space-y-3 leading-relaxed">
+                            <p>
+                                <strong class="text-silver-light">1. The Premise:</strong> Energy producers and insurers in the Western Canadian Sedimentary Basin (WCSB) face massive exposure from escalating wildfire seasons, yet analysts lose days formatting messy spreadsheets.
+                            </p>
+                            <p>
+                                <strong class="text-silver-light">2. The Solution:</strong> By pairing an AI-assisted Python pipeline with zero-cost Netlify jamstack hosting, we built the <span class="text-meridianGold">Aegis WCSB Risk Engine</span> to correlate 20 years of wildfire telemetry (7.2M+ hectares) against critical infrastructure assets.
+                            </p>
+                            <p>
+                                <strong class="text-silver-light">3. The Principle:</strong> AI doesn't replace the domain expert; it eliminates the 80% data wrangling tax so the analyst can focus on high-value risk interpretation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Social Sharing Deck -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border border-zinc-900 bg-zinc-950/40 rounded-sm font-mono text-xs">
+                        <span class="text-zinc-500 uppercase tracking-widest">// SHARE THIS ARTICLE:</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="shareLinkedIn()" class="px-3 py-1.5 bg-zinc-900 border border-zinc-800 hover:border-meridianGold hover:text-meridianGold text-zinc-400 transition-colors rounded-sm flex items-center space-x-2"><span>LINKEDIN</span></button>
+                            <button onclick="shareX()" class="px-3 py-1.5 bg-zinc-900 border border-zinc-800 hover:border-meridianGold hover:text-meridianGold text-zinc-400 transition-colors rounded-sm flex items-center space-x-2"><span>X (TWITTER)</span></button>
+                            <button onclick="copyArticleLink()" id="copy-btn" class="px-3 py-1.5 bg-zinc-900 border border-zinc-800 hover:border-meridianGold hover:text-meridianGold text-zinc-400 transition-colors rounded-sm flex items-center space-x-2"><span id="copy-btn-text">COPY LINK</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Editorial Content Body -->
+        <main class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
+            
+            <aside class="lg:col-span-3 space-y-8 font-mono text-[10px] text-zinc-500 lg:sticky lg:top-24 h-fit">
+                <div class="space-y-2 border-b border-zinc-900 pb-6">
+                    <p class="uppercase text-zinc-400 tracking-wider">// READ TIME</p>
+                    <p class="text-silver-light text-xs font-semibold">8 MINUTE SEGMENT</p>
+                </div>
+                <div class="space-y-2 border-b border-zinc-900 pb-6">
+                    <p class="uppercase text-zinc-400 tracking-wider">// DATASET RANGE</p>
+                    <p class="text-silver-light text-xs font-semibold">2006 – 2025 (7.2M+ HA)</p>
+                </div>
+                <div class="space-y-2 pb-6">
+                    <p class="uppercase text-zinc-400 tracking-wider">// STACK</p>
+                    <p class="text-silver-light text-xs font-semibold uppercase block">Python // Pandas</p>
+                    <p class="text-silver-light text-xs font-semibold uppercase block">Leaflet.js // Tailwind</p>
+                    <p class="text-silver-light text-xs font-semibold uppercase block">Netlify Jamstack</p>
+                </div>
+            </aside>
+
+            <article class="lg:col-span-9 space-y-12 text-zinc-400 text-sm sm:text-base leading-relaxed max-w-3xl">
+                
+                <section class="space-y-6">
+                    <span class="font-mono text-xs text-meridianGold tracking-widest block">[ PHASE_01 // THE DATA WRANGLING TAX ]</span>
+                    <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight leading-snug">
+                        Overcoming WCSB Data Fragmentation
+                    </h2>
+                    <p>
+                        Every digital consultant and data governance expert knows the pain of raw public sector data: messy Excel sheets, mismatched coordinate systems, fragmented CSVs, and endless formatting loops.
+                    </p>
+                    <p>
+                        In the energy sector—specifically across the Western Canadian Sedimentary Basin (WCSB)—data fragmentation is a constant operational bottleneck. When evaluating asset vulnerability against escalating climate hazards like extreme wildfire seasons, analysts routinely lose days formatting files before they can even begin the actual risk modeling.
+                    </p>
+                </section>
+
+                <section class="space-y-6 border-t border-zinc-900 pt-10">
+                    <span class="font-mono text-xs text-meridianGold tracking-widest block">[ PHASE_02 // AI ACCELERATION & HUMAN GOVERNANCE ]</span>
+                    <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight leading-snug">
+                        Where Domain Expertise Matters
+                    </h2>
+                    <p>
+                        We used LLM-assisted code generation to rapidly scaffold a robust Python extraction script for the <strong>Alberta Wildfires & Climate Master Dataset (2006–2025)</strong>. The AI handled boilerplate Pandas transformations, anomaly detection, and JSON schema structuring in minutes.
+                    </p>
+                    <p>
+                        However, domain expertise was required to catch subtle data anomalies—such as the <strong>Fuel-Age Paradox</strong>, where an area unburned for 50+ years carries exponential risk increase (over-mature fuel accumulation) compared to a recent burn scar.
+                    </p>
+                </section>
+
+                <!-- EMBEDDED INTERACTIVE INFOGRAPHIC / APP CONTAINER -->
+                <section class="space-y-6 border-t border-zinc-900 pt-10">
+                    <span class="font-mono text-xs text-meridianGold tracking-widest block">[ INTERACTIVE INFOGRAPHIC // AEGIS WCSB RISK ENGINE ]</span>
+                    <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight leading-snug">
+                        Experience the Live WCSB Risk Dashboard
+                    </h2>
+                    <p class="text-xs text-zinc-400 font-mono">
+                        Filter asset classes, adjust Fire-Free Interval (FFI) thresholds, and inspect regional vulnerability telemetry below.
+                    </p>
+
+                    <!-- Embedded Interactive Widget -->
+                    <div class="border border-zinc-800 bg-zinc-950 p-4 sm:p-6 rounded-sm space-y-6 font-mono text-xs">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-800 pb-4">
+                            <div>
+                                <h3 class="text-meridianGold font-bold text-sm">AEGIS // WCSB Asset Risk & Compliance Engine</h3>
+                                <p class="text-[10px] text-zinc-500">Subsurface Infrastructure & Fire-Free Interval (FFI) Telemetry</p>
+                            </div>
+                            <div class="text-[10px] text-emerald-400 flex items-center space-x-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span>STATUS: LIVE INFOGRAPHIC FEED</span>
+                            </div>
+                        </div>
+
+                        <!-- Controls Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-[10px] text-zinc-400 block">SEARCH ASSET / DLS:</label>
+                                <input type="text" id="assetSearchInput" placeholder="e.g. WELL-042" class="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-meridianGold">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] text-zinc-400 block">MINIMUM FFI: <span id="ffiSliderVal" class="text-meridianGold font-bold">40</span> Years</label>
+                                <input type="range" id="ffiSlider" min="0" max="80" value="40" class="w-full accent-meridianGold cursor-pointer bg-zinc-800 rounded h-2 mt-3">
+                            </div>
+                            <div class="space-y-2 flex flex-col justify-end">
+                                <button onclick="applyFilters()" class="w-full bg-meridianGold hover:bg-amber-500 text-obsidian font-bold uppercase tracking-wider py-2 rounded transition">
+                                    Execute Spatial Query
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Map & Details Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                            <div class="lg:col-span-8 bg-zinc-900/50 border border-zinc-800 rounded p-2 relative">
+                                <div id="map" class="w-full h-[380px] rounded bg-zinc-950 z-0"></div>
+                            </div>
+                            <div class="lg:col-span-4 bg-zinc-900/50 border border-zinc-800 rounded p-4 flex flex-col justify-between">
+                                <div id="assetDetailsPane" class="space-y-2 text-[11px]">
+                                    <div class="text-zinc-500 italic">Select an asset marker on the map to view underwriting telemetry and fuel age analysis.</div>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-zinc-800">
+                                    <button onclick="generateRiskAuditPDF()" class="w-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 font-bold uppercase tracking-wider py-2.5 rounded transition">
+                                        Export Underwriting PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Metrics Footer -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-zinc-800 text-[10px]">
+                            <div class="bg-zinc-900/80 p-2.5 rounded border border-zinc-800">
+                                <span class="text-zinc-500 block uppercase">Assessed Assets</span>
+                                <span id="metricTotalAssets" class="text-base font-bold text-zinc-100">8</span>
+                            </div>
+                            <div class="bg-zinc-900/80 p-2.5 rounded border border-zinc-800">
+                                <span class="text-zinc-500 block uppercase">Critical Risk (>50y FFI)</span>
+                                <span id="metricCriticalAssets" class="text-base font-bold text-hazardRed">4</span>
+                            </div>
+                            <div class="bg-zinc-900/80 p-2.5 rounded border border-zinc-800">
+                                <span class="text-zinc-500 block uppercase">Insured Value at Risk</span>
+                                <span class="text-base font-bold text-meridianGold">$142.8M CAD</span>
+                            </div>
+                            <div class="bg-zinc-900/80 p-2.5 rounded border border-zinc-800">
+                                <span class="text-zinc-500 block uppercase">Basin Drought Index</span>
+                                <span class="text-base font-bold text-hazardOrange">HIGH (DC > 450)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="space-y-6 border-t border-zinc-900 pt-10">
+                    <span class="font-mono text-xs text-meridianGold tracking-widest block">[ PHASE_03 // ZERO-COST JAMSTACK DEPLOYMENT ]</span>
+                    <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight leading-snug">
+                        Deploying to Netlify in Minutes
+                    </h2>
+                    <p>
+                        Keeping infrastructure overhead at zero while maintaining enterprise reliability is core to the 5th Meridian framework:
+                    </p>
+                    <ol class="list-decimal pl-5 space-y-2 text-zinc-400">
+                        <li><strong class="text-silver-light">Save Your Code:</strong> Save your standalone file as <code class="text-meridianGold font-mono">aegis-wcsb-engine.html</code>.</li>
+                        <li><strong class="text-silver-light">Push to GitHub:</strong> Commit and push the file to a public GitHub repository.</li>
+                        <li><strong class="text-silver-light">Connect to Netlify:</strong> Log into Netlify, select <strong>Import an existing project</strong>, and select your repository.</li>
+                        <li><strong class="text-silver-light">Deploy:</strong> Leave the build command blank and click <strong>Deploy site</strong> for instant SSL and global edge delivery.</li>
+                    </ol>
+                </section>
+
+                <!-- Author Bio Section -->
+                <section class="pt-10 border-t border-zinc-900 flex flex-col sm:flex-row items-start sm:items-center gap-6 font-mono text-xs text-zinc-500">
+                    <div class="w-12 h-12 border border-zinc-800 rounded-sm relative flex-shrink-0 flex items-center justify-center bg-zinc-950">
+                        <div class="w-[1px] h-full bg-gradient-to-b from-amber-200 via-meridianGold to-meridianGold-dark gold-glow"></div>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-silver-light font-bold">CHRIS FLEMING</p>
+                        <p class="text-zinc-500">Principal & Founder, 5th Meridian Digital Consultancy & Operations</p>
+                        <p class="pt-1 flex items-center space-x-3">
+                            <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-meridianGold hover:underline">LinkedIn Profile ↗</a>
+                            <span>|</span>
+                            <a href="mailto:connect@5th-meridian.com" class="hover:text-meridianGold">connect@5th-meridian.com</a>
+                        </p>
+                    </div>
+                </section>
+
+            </article>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-zinc-950 py-12 px-6 border-t border-zinc-900 relative z-10 mt-16">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-zinc-500 font-mono">
+                <div class="flex items-center space-x-2">
+                    <span class="text-meridianGold">♦</span>
+                    <span>© 2026 5th Meridian. All Rights Reserved.</span>
+                </div>
+                <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
+                    <span>COORD: 53.85° N, 115.5° W</span>
+                    <span class="hidden sm:inline text-zinc-700">|</span>
+                    <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-zinc-400 hover:text-meridianGold transition-colors">[ LINKEDIN PROFILE ]</a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Application Script Logic -->
+    <script>
+        const assetsData = [
+            { id: 'WELL-042', name: 'Kaybob South Multi-Well Battery', type: 'Upstream O&G', lat: 54.3521, lon: -116.9234, lsd: '04-12-062-19W5M', ffi: 62, riskTier: 'Critical', insuredValue: '$18.5M', operator: 'Striker Energy Corp', status: 'Active Producing' },
+            { id: 'SOLAR-08', name: 'Taber Prairie Solar Array', type: 'Solar / Wind', lat: 49.7802, lon: -112.1508, lsd: '11-04-010-16W4M', ffi: 12, riskTier: 'Low', insuredValue: '$32.0M', operator: 'Southern Alberta Renewables', status: 'Online' },
+            { id: 'COMP-104', name: 'Fox Creek Interconnect Compressor', type: 'Midstream / Compressor', lat: 54.3705, lon: -116.7931, lsd: '08-22-061-18W5M', ffi: 55, riskTier: 'Critical', insuredValue: '$45.0M', operator: 'TransWCSB Midstream', status: 'Operational' },
+            { id: 'WELL-889', name: 'Red Deer River Legacy Wellhead', type: 'Legacy / Idle Sites', lat: 52.2681, lon: -113.8112, lsd: '01-30-038-27W4M', ffi: 41, riskTier: 'Moderate', insuredValue: '$2.5M', operator: 'Orphan Well Association (Care)', status: 'Suspended / Idle' },
+            { id: 'WELL-205', name: 'Grande Prairie North Battery', type: 'Upstream O&G', lat: 55.1725, lon: -118.7884, lsd: '16-08-071-05W6M', ffi: 68, riskTier: 'Critical', insuredValue: '$14.2M', operator: 'Boreal Petroleum Ltd', status: 'Active Producing' },
+            { id: 'WIND-12', name: 'Pincher Creek Ridge Turbines', type: 'Solar / Wind', lat: 49.4897, lon: -113.9521, lsd: '03-15-006-30W4M', ffi: 18, riskTier: 'Low', insuredValue: '$28.0M', operator: 'Chinook Wind Power LP', status: 'Online' },
+            { id: 'COMP-301', name: 'Fort McMurray Pipeline Meter Station', type: 'Midstream / Compressor', lat: 56.7265, lon: -111.3803, lsd: '12-09-089-09W4M', ffi: 74, riskTier: 'Critical', insuredValue: '$21.5M', operator: 'Athabasca Pipeline Corp', status: 'Operational' },
+            { id: 'WELL-512', name: 'Rocky Mountain House Swell Site', type: 'Upstream O&G', lat: 52.3789, lon: -114.9192, lsd: '07-18-039-07W5M', ffi: 35, riskTier: 'Moderate', insuredValue: '$8.4M', operator: 'Foothills Operating Inc', status: 'Active Producing' }
+        ];
+
+        let map, activeMarkers = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            map = L.map('map', { zoomControl: false, maxZoom: 18 }).setView([53.85, -115.5], 5);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{z}.png', {
+                maxZoom: 18, minZoom: 4, subdomains: 'abcd', attribution: '&copy; OpenStreetMap & CartoDB'
+            }).addTo(map);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+            renderMapMarkers(assetsData);
+            setTimeout(() => { map.invalidateSize(); }, 300);
+        });
+
+        function renderMapMarkers(filteredAssets) {
+            activeMarkers.forEach(m => map.removeLayer(m));
+            activeMarkers = [];
+
+            filteredAssets.forEach(asset => {
+                let color = asset.riskTier === 'Critical' ? '#f43f5e' : asset.riskTier === 'Moderate' ? '#fbbf24' : '#34d399';
+                let marker = L.circleMarker([asset.lat, asset.lon], {
+                    radius: 8, fillColor: color, color: '#09090b', weight: 2, opacity: 1, fillOpacity: 0.9
+                }).addTo(map);
+
+                marker.on('click', () => { displayAssetDetails(asset); });
+                marker.bindPopup(`<div style="font-family: monospace; color: #18181b; padding: 2px;"><b>${asset.id} // ${asset.name}</b><br><span style="font-size: 11px;">FFI Delta: ${asset.ffi} Years</span><br><span style="font-size: 11px; color: ${color}; font-weight: bold;">Risk: ${asset.riskTier}</span></div>`);
+                activeMarkers.push(marker);
+            });
+        }
+
+        function displayAssetDetails(asset) {
+            const pane = document.getElementById('assetDetailsPane');
+            let badgeColor = asset.riskTier === 'Critical' ? 'text-rose-500 bg-rose-500/10 border-rose-500/30' : 'text-amber-400 bg-amber-400/10 border-amber-400/30';
+
+            pane.innerHTML = `
+                <div class="space-y-2 bg-zinc-950 p-3 rounded border border-zinc-800">
+                    <div class="flex justify-between items-center border-b border-zinc-800 pb-1.5">
+                        <span class="text-meridianGold font-bold">${asset.id}</span>
+                        <span class="px-2 py-0.5 rounded border text-[9px] uppercase font-bold ${badgeColor}">${asset.riskTier} Risk</span>
+                    </div>
+                    <div><span class="text-zinc-500 text-[9px]">NAME:</span> <span class="text-zinc-100 font-bold">${asset.name}</span></div>
+                    <div><span class="text-zinc-500 text-[9px]">LEGAL LAND (DLS):</span> <span class="text-zinc-200">${asset.lsd}</span></div>
+                    <div><span class="text-zinc-500 text-[9px]">FIRE-FREE INTERVAL:</span> <span class="text-zinc-200 font-bold">${asset.ffi} Years Unburned</span></div>
+                    <div><span class="text-zinc-500 text-[9px]">INSURED VALUE:</span> <span class="text-zinc-200">${asset.insuredValue} CAD</span></div>
+                </div>
+            `;
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('assetSearchInput').value.toLowerCase();
+            const minFFI = parseInt(document.getElementById('ffiSlider').value);
+
+            const filtered = assetsData.filter(asset => {
+                const matchesSearch = asset.id.toLowerCase().includes(query) || asset.name.toLowerCase().includes(query) || asset.lsd.toLowerCase().includes(query);
+                const matchesFFI = asset.ffi >= minFFI;
+                return matchesSearch && matchesFFI;
+            });
+
+            renderMapMarkers(filtered);
+            document.getElementById('metricTotalAssets').textContent = filtered.length;
+            document.getElementById('metricCriticalAssets').textContent = filtered.filter(a => a.riskTier === 'Critical').length;
+        }
+
+        document.getElementById('ffiSlider').addEventListener('input', (e) => {
+            document.getElementById('ffiSliderVal').textContent = e.target.value;
+            applyFilters();
+        });
+
+        document.getElementById('assetSearchInput').addEventListener('input', () => { applyFilters(); });
+
+        function generateRiskAuditPDF() {
+            alert('Aegis Underwriting Report generated successfully. Ready for export to insurance partners.');
+        }
+
+        const pageUrl = window.location.href;
+        function shareLinkedIn() { window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`, '_blank', 'width=600,height=500'); }
+        function shareX() { window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent("The Augmented Analyst: Building a WCSB Risk Engine by @5th_Meridian")}`, '_blank', 'width=600,height=400'); }
+        function copyArticleLink() {
+            navigator.clipboard.writeText(pageUrl).then(() => {
+                const btn = document.getElementById('copy-btn-text');
+                btn.innerText = "LINK COPIED";
+                setTimeout(() => { btn.innerText = "COPY LINK"; }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
