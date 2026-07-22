@@ -81,7 +81,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        /* Custom Leaflet Dark Tooltips */
         .leaflet-popup-content-wrapper, .leaflet-popup-tip {
             background-color: #18181b !important;
             color: #f4f4f5 !important;
@@ -156,7 +155,7 @@
             </div>
         </section>
 
-        <!-- Executive TL;DR & Social Share -->
+        <!-- Executive TL;DR -->
         <section class="max-w-7xl mx-auto px-6 pt-12 z-10 relative">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
                 <div class="lg:col-span-3"></div>
@@ -170,7 +169,7 @@
                         <div class="text-zinc-300 text-sm space-y-3 leading-relaxed">
                             <p><strong class="text-silver-light">1. The Premise:</strong> Energy producers and underwriters need dynamic insight into subsurface infrastructure exposure against historical wildfire Fire-Free Intervals (FFI).</p>
                             <p><strong class="text-silver-light">2. The Execution:</strong> Using Gemini to automate ETL data cleaning on 20 years of Alberta wildfire telemetry (2006–2025), we built a fully responsive risk engine.</p>
-                            <p><strong class="text-silver-light">3. The Live Artifact:</strong> Scroll down to interact with the embedded <strong>Aegis WCSB Risk Engine</strong> below to query asset risk tiers and export underwriting summaries.</p>
+                            <p><strong class="text-silver-light">3. The Live Artifact:</strong> Interact with the <strong>Aegis WCSB Risk Engine</strong> below with scenario toggles to evaluate portfolio exposure.</p>
                         </div>
                     </div>
                 </div>
@@ -180,7 +179,6 @@
         <!-- Editorial Body & Interactive Infographic -->
         <main class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
             
-            <!-- Left Meta Column -->
             <aside class="lg:col-span-3 space-y-8 font-mono text-[10px] text-zinc-500 lg:sticky lg:top-24 h-fit">
                 <div class="space-y-2 border-b border-zinc-900 pb-6">
                     <p class="uppercase text-zinc-400 tracking-wider">// READ TIME</p>
@@ -188,11 +186,10 @@
                 </div>
                 <div class="space-y-2 border-b border-zinc-900 pb-6">
                     <p class="uppercase text-zinc-400 tracking-wider">// CORE ENGINE</p>
-                    <p class="text-zinc-400 normal-case leading-relaxed">Leaflet GIS + Esri Dark Vector Canvas + Fire-Free Interval (FFI) Risk Logic.</p>
+                    <p class="text-zinc-400 normal-case leading-relaxed">Leaflet GIS + Esri Dark Vector Canvas + Scenario Stress Testing.</p>
                 </div>
             </aside>
 
-            <!-- Right Main Column -->
             <article class="lg:col-span-9 space-y-12 text-zinc-400 text-sm sm:text-base leading-relaxed max-w-3xl">
                 
                 <section class="space-y-6">
@@ -208,14 +205,14 @@
                     </p>
                 </section>
 
-                <!-- EMBEDDED INTERACTIVE INFOGRAPHIC: AEGIS RISK ENGINE -->
+                <!-- EMBEDDED INTERACTIVE INFOGRAPHIC: AEGIS RISK ENGINE WITH SCENARIO TOGGLES -->
                 <section class="space-y-6 border-t border-zinc-900 pt-10">
                     <span class="font-mono text-xs text-meridianGold tracking-widest block">[ SECTION_02 // INTERACTIVE EXPLORATION ]</span>
                     <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight leading-snug">
                         Aegis // WCSB Asset Risk & Compliance Engine
                     </h2>
                     <p class="text-xs font-mono text-zinc-500">
-                        Test the live prototype below. Select an asset marker on the map to inspect its FFI delta, insured value, and generate an underwriting audit report.
+                        Test the live conceptual model below. Switch scenarios to simulate drought stress or select map pins to inspect underwriting telemetry.
                     </p>
 
                     <!-- Aegis Engine Container -->
@@ -229,7 +226,23 @@
                             </div>
                             <div class="flex items-center space-x-2 text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-3 py-1 rounded-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                <span>STATUS: LIVE INFOGRAPHIC FEED</span>
+                                <span>STATUS: CONCEPT STRESS TEST ACTIVE</span>
+                            </div>
+                        </div>
+
+                        <!-- Scenario Selector Bar -->
+                        <div class="bg-obsidian p-4 border border-zinc-800 rounded-sm space-y-2">
+                            <span class="block text-[10px] text-zinc-400 uppercase tracking-wider">// SELECT CLIMATE STRESS SCENARIO:</span>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <button onclick="setScenario('baseline')" id="btn-baseline" class="py-2 px-3 bg-zinc-900 border border-meridianGold text-meridianGold font-bold rounded-sm text-center transition-all">
+                                    01 // Baseline (Historical)
+                                </button>
+                                <button onclick="setScenario('drought')" id="btn-drought" class="py-2 px-3 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 rounded-sm text-center transition-all">
+                                    02 // Severe Drought (DC > 600)
+                                </button>
+                                <button onclick="setScenario('postfire')" id="btn-postfire" class="py-2 px-3 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 rounded-sm text-center transition-all">
+                                    03 // Post-Mitigation Recovery
+                                </button>
                             </div>
                         </div>
 
@@ -291,11 +304,11 @@
                             </div>
                             <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
                                 <span class="text-[10px] text-zinc-500 block uppercase">Insured Value at Risk</span>
-                                <span class="text-lg font-bold text-meridianGold">$142.8M</span>
+                                <span id="metricValRisk" class="text-lg font-bold text-meridianGold">$142.8M</span>
                             </div>
                             <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
                                 <span class="text-[10px] text-zinc-500 block uppercase">Basin Drought Index</span>
-                                <span class="text-lg font-bold text-hazardOrange">HIGH (DC>450)</span>
+                                <span id="metricDrought" class="text-lg font-bold text-hazardOrange">HIGH (DC > 450)</span>
                             </div>
                         </div>
 
@@ -308,7 +321,7 @@
                         Deploying via Netlify
                     </h2>
                     <p>
-                        By combining Python data cleaning scripts with static hosting on Netlify, consulting firms can deploy fully interactive geospatial applications in minutes without recurring cloud database overhead.
+                        By combining modular static architecture with automated deployment pipelines on Netlify, consulting firms can present interactive conceptual models to stakeholders instantly without recurring database overhead.
                     </p>
                 </section>
 
@@ -332,27 +345,42 @@
 
     </div>
 
-    <!-- Leaflet & App Script -->
+    <!-- Leaflet & App Script with Scenario Stress Testing -->
     <script>
-        // Mock Asset Database across Alberta WCSB
-        const assets = [
-            { id: 'WELL-042', name: 'Pembina Cardium Wellhead Alpha', dls: '04-12-048-09W5M', ffi: 62, risk: 'Critical', value: '$14.2M', lat: 53.25, lon: -115.10 },
-            { id: 'COMP-301', name: 'Fort McMurray Pipeline Meter Station', dls: '12-09-089-09W4M', ffi: 74, risk: 'Critical', value: '$21.5M', lat: 56.72, lon: -111.38 },
-            { id: 'FAC-108', name: 'Grand Prairie Compressor Unit B', dls: '08-16-071-05W6M', ffi: 45, risk: 'Moderate', value: '$18.0M', lat: 55.17, lon: -118.78 },
-            { id: 'SOLAR-09', name: 'Brooks Solar Farm Perimeter Array', dls: '02-30-018-15W4M', ffi: 12, risk: 'Low', value: '$32.0M', lat: 50.56, lon: -111.89 },
-            { id: 'WELL-119', name: 'Red Deer Heavy Oil Battery', dls: '16-22-038-27W4M', ffi: 58, risk: 'Critical', value: '$9.8M', lat: 52.26, lon: -113.81 },
-            { id: 'WELL-088', name: 'Fox Creek Condensate Facility', dls: '10-04-062-19W5M', ffi: 68, risk: 'Critical', value: '$28.4M', lat: 54.37, lon: -116.79 },
-            { id: 'FAC-412', name: 'Lloydminster Thermal SAGD Node', dls: '06-11-050-28W3M', ffi: 31, risk: 'Moderate', value: '$12.5M', lat: 53.28, lon: -110.00 },
-            { id: 'COMP-505', name: 'Edmonton Inter-Pipeline Junction', dls: '04-18-053-23W4M', ffi: 24, risk: 'Low', value: '$6.4M', lat: 53.54, lon: -113.49 }
+        const rawAssets = [
+            { id: 'WELL-042', name: 'Pembina Cardium Wellhead Alpha', dls: '04-12-048-09W5M', ffiBase: 62, riskBase: 'Critical', value: '$14.2M', lat: 53.25, lon: -115.10 },
+            { id: 'COMP-301', name: 'Fort McMurray Pipeline Meter Station', dls: '12-09-089-09W4M', ffiBase: 74, riskBase: 'Critical', value: '$21.5M', lat: 56.72, lon: -111.38 },
+            { id: 'FAC-108', name: 'Grand Prairie Compressor Unit B', dls: '08-16-071-05W6M', ffiBase: 45, riskBase: 'Moderate', value: '$18.0M', lat: 55.17, lon: -118.78 },
+            { id: 'SOLAR-09', name: 'Brooks Solar Farm Perimeter Array', dls: '02-30-018-15W4M', ffiBase: 12, riskBase: 'Low', value: '$32.0M', lat: 50.56, lon: -111.89 },
+            { id: 'WELL-119', name: 'Red Deer Heavy Oil Battery', dls: '16-22-038-27W4M', ffiBase: 58, riskBase: 'Critical', value: '$9.8M', lat: 52.26, lon: -113.81 },
+            { id: 'WELL-088', name: 'Fox Creek Condensate Facility', dls: '10-04-062-19W5M', ffiBase: 68, riskBase: 'Critical', value: '$28.4M', lat: 54.37, lon: -116.79 },
+            { id: 'FAC-412', name: 'Lloydminster Thermal SAGD Node', dls: '06-11-050-28W3M', ffiBase: 31, riskBase: 'Moderate', value: '$12.5M', lat: 53.28, lon: -110.00 },
+            { id: 'COMP-505', name: 'Edmonton Inter-Pipeline Junction', dls: '04-18-053-23W4M', ffiBase: 24, riskBase: 'Low', value: '$6.4M', lat: 53.54, lon: -113.49 }
         ];
 
-        // Initialize Leaflet Map with Esri Dark Gray Canvas Basemap (Guaranteed Tile Rendering)
+        let currentScenario = 'baseline';
+
+        function getActiveAssets() {
+            return rawAssets.map(a => {
+                let ffi = a.ffiBase;
+                let risk = a.riskBase;
+                if (currentScenario === 'drought') {
+                    ffi += 15; // Drought amplifies effective fuel aging/dryness index
+                    if (ffi > 50) risk = 'Critical';
+                } else if (currentScenario === 'postfire') {
+                    ffi = Math.max(2, ffi - 40); // Mitigation clears timber fuel loads
+                    risk = ffi > 50 ? 'Critical' : ffi > 30 ? 'Moderate' : 'Low';
+                }
+                return { ...a, ffi, risk };
+            });
+        }
+
+        // Initialize Leaflet Map with Esri Dark Gray Canvas Basemap
         const map = L.map('map', {
             zoomControl: false,
             attributionControl: false
         }).setView([53.5461, -113.4938], 6);
 
-        // Esri Dark Gray Vector Base
         L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 16,
             minZoom: 4,
@@ -367,6 +395,7 @@
             markerLayers.forEach(m => map.removeLayer(m));
             markerLayers = [];
 
+            const assets = getActiveAssets();
             let filtered = assets.filter(a => a.ffi >= filterFfi);
             if (searchFilter) {
                 filtered = filtered.filter(a => a.id.toLowerCase().includes(searchFilter.toLowerCase()) || a.name.toLowerCase().includes(searchFilter.toLowerCase()));
@@ -395,6 +424,36 @@
             document.getElementById('metricCritical').textContent = filtered.filter(a => a.ffi > 50).length;
         }
 
+        function setScenario(scenario) {
+            currentScenario = scenario;
+            ['baseline', 'drought', 'postfire'].forEach(s => {
+                const btn = document.getElementById(`btn-${s}`);
+                if (s === scenario) {
+                    btn.className = "py-2 px-3 bg-zinc-900 border border-meridianGold text-meridianGold font-bold rounded-sm text-center transition-all";
+                } else {
+                    btn.className = "py-2 px-3 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 rounded-sm text-center transition-all";
+                }
+            });
+
+            const droughtEl = document.getElementById('metricDrought');
+            const valRiskEl = document.getElementById('metricValRisk');
+            if (scenario === 'drought') {
+                droughtEl.textContent = "EXTREME (DC > 650)";
+                droughtEl.className = "text-lg font-bold text-hazard-red";
+                valRiskEl.textContent = "$184.2M";
+            } else if (scenario === 'postfire') {
+                droughtEl.textContent = "MITIGATED (DC < 300)";
+                droughtEl.className = "text-lg font-bold text-emerald-400";
+                valRiskEl.textContent = "$54.1M";
+            } else {
+                droughtEl.textContent = "HIGH (DC > 450)";
+                droughtEl.className = "text-lg font-bold text-hazardOrange";
+                valRiskEl.textContent = "$142.8M";
+            }
+
+            executeSpatialQuery();
+        }
+
         function selectAsset(asset) {
             document.getElementById('inspId').textContent = asset.id;
             document.getElementById('inspName').textContent = asset.name;
@@ -421,10 +480,9 @@
         });
 
         function exportUnderwritingPDF() {
-            alert('[AEGIS ENGINE] Generating automated underwriting risk audit PDF with FFI telemetry and spatial insurance metrics...');
+            alert('[AEGIS ENGINE] Generating automated underwriting risk audit PDF with active scenario telemetry...');
         }
 
-        // Initial Render
         renderMarkers(40, '');
 
         setTimeout(() => {
