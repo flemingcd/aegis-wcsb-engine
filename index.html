@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+    <script src="nav.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -54,6 +54,13 @@
                 }
             }
         }
+		
+		function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  if (menu) {
+    menu.classList.toggle('hidden');
+  }
+}
     </script>
     
     <style>
@@ -114,28 +121,87 @@
         </div>
 
         <!-- Header Navigation -->
-        <header class="sticky top-0 z-50 bg-obsidian/80 backdrop-blur-md border-b border-zinc-800/50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="relative w-8 h-8 flex items-center justify-center">
-                        <div class="absolute inset-0 border border-zinc-800 rounded-sm"></div>
-                        <div class="w-[1px] h-full bg-gradient-to-b from-meridianGold-light via-meridianGold to-meridianGold-dark gold-glow"></div>
-                    </div>
-                    <span class="font-mono tracking-widest text-silver-light text-sm font-semibold uppercase">5th Meridian</span>
-                </div>
-                <nav class="hidden md:flex items-center space-x-8 text-xs font-mono tracking-wider">
-                    <a href="#about" class="hover:text-meridianGold transition-colors">01// ALIGNMENT</a>
-                    <a href="#services" class="hover:text-meridianGold transition-colors">02// CAPABILITIES</a>
-                    <a href="#grid-showcase" class="hover:text-meridianGold transition-colors">02.5// 5M GRID</a>
-                    <a href="5m_grid_disruption_blog_post.html" class="hover:text-meridianGold transition-colors">02.7// INSIGHTS</a>
-                    <a href="#contact" class="hover:text-meridianGold transition-colors">03// INITIATE</a>
-                    <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-zinc-400 hover:text-meridianGold transition-colors">[ LINKEDIN ↗ ]</a>
-                </nav>
-                <button onclick="smartMailto('RE: General Engagement Inquiry', 'Hi 5th Meridian Team,\n\nI\'d like to discuss partnering with 5th Meridian for an upcoming project. Let\'s set up a technical fit assessment.\n\nBest regards,')" class="px-4 py-2 border border-zinc-700 text-xs font-mono text-silver-light hover:border-meridianGold/80 hover:text-meridianGold transition-all duration-300 bg-transparent">
-                    [ START INQUIRY ]
-                </button>
+       <header class="sticky top-0 z-50 bg-obsidian/95 backdrop-blur-md border-b border-panelBorder font-mono">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between text-xs tracking-wider">
+    
+    <!-- BRAND LOGO -->
+    <a href="index.html" class="flex items-center space-x-3 group">
+      <div class="w-6 h-6 border border-amber-500/40 bg-zinc-900 flex items-center justify-center p-1">
+        <div class="w-0.5 h-full bg-meridianGold group-hover:bg-amber-300 transition-colors"></div>
+      </div>
+      <span class="font-bold text-silverLight uppercase tracking-widest text-sm group-hover:text-meridianGold transition">5TH MERIDIAN</span>
+    </a>
+    
+    <!-- DESKTOP NAVIGATION LINKS -->
+    <nav class="hidden lg:flex items-center space-x-6 text-silverDark">
+      <a href="index.html#alignment" class="hover:text-silverLight transition">01// ALIGNMENT</a>
+      <a href="index.html#capabilities" class="hover:text-silverLight transition">02// CAPABILITIES</a>
+      <a href="5mGrid.html" class="text-meridianGold font-semibold hover:text-amber-300 transition">02.5// 5M GRID</a>
+      
+      <!-- INSIGHTS & CASE STUDIES DROPDOWN MENU -->
+      <div class="relative group py-2">
+        <button class="flex items-center gap-1.5 text-silverLight font-bold hover:text-meridianGold transition uppercase tracking-wider">
+          <span>03// INSIGHTS</span>
+          <svg class="w-3 h-3 text-meridianGold transform group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        <!-- DROPDOWN PANEL -->
+        <div class="absolute left-0 mt-2 w-72 bg-charcoal border border-amber-500/30 rounded-md shadow-2xl opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50 p-2 space-y-1">
+          <div class="text-[10px] text-silverDark font-bold px-2 py-1 border-b border-panelBorder uppercase tracking-widest">PUBLISHED CASE STUDIES</div>
+          
+          <a href="the_unburned_powder_keg.html" class="block p-2 rounded hover:bg-zinc-800 text-silver hover:text-silverLight transition">
+            <div class="font-bold text-xs flex items-center justify-between">
+              <span>The Unburned Powder Keg</span>
+              <span class="text-[9px] text-meridianGold font-mono">NEW</span>
             </div>
-        </header>
+            <p class="text-[10px] text-silverDark font-sans mt-0.5">Predictive wildfire analytics &amp; asset exposure</p>
+          </a>
+
+          <a href="5m_grid_disruption_blog_post.html" class="block p-2 rounded hover:bg-zinc-800 text-silver hover:text-silverLight transition">
+            <div class="font-bold text-xs">5M Grid Disruption</div>
+            <p class="text-[10px] text-silverDark font-sans mt-0.5">WCSB GIS operations &amp; liability modeling</p>
+          </a>
+        </div>
+      </div>
+
+      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="text-silverDark hover:text-silverLight transition px-1">[ LINKEDIN ↗ ]</a>
+    </nav>
+
+    <!-- START INQUIRY BUTTON -->
+    <div class="flex items-center space-x-3">
+      <a href="#inquiry" class="border border-zinc-700 bg-obsidian px-3 py-1.5 rounded-none text-silverLight hover:border-meridianGold hover:text-meridianGold transition shadow-sm font-semibold tracking-wider">
+        [ START INQUIRY ]
+      </a>
+
+      <!-- MOBILE MENU TOGGLE BUTTON -->
+      <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="lg:hidden p-1.5 border border-panelBorder text-silver hover:text-meridianGold transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- MOBILE DROPDOWN MENU -->
+  <div id="mobileMenu" class="hidden lg:hidden border-b border-panelBorder bg-charcoal px-4 py-4 space-y-3 font-mono text-xs">
+    <a href="index.html#alignment" class="block text-silver hover:text-meridianGold">01// ALIGNMENT</a>
+    <a href="index.html#capabilities" class="block text-silver hover:text-meridianGold">02// CAPABILITIES</a>
+    <a href="5mGrid.html" class="block text-meridianGold font-bold">02.5// 5M GRID</a>
+    
+    <div class="pt-2 border-t border-panelBorder space-y-2">
+      <div class="text-[10px] text-amberLight font-bold uppercase tracking-widest">03// INSIGHTS &amp; CASE STUDIES</div>
+      <a href="the_unburned_powder_keg.html" class="block pl-3 text-silverDark hover:text-silver">• The Unburned Powder Keg</a>
+      <a href="5m_grid_disruption_blog_post.html" class="block pl-3 text-silverDark hover:text-silver">• 5M Grid Disruption</a>
+      
+    </div>
+
+    <div class="pt-2 border-t border-panelBorder flex justify-between items-center text-silverDark">
+      <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" class="hover:text-silverLight">[ LINKEDIN ↗ ]</a>
+    </div>
+  </div>
+</header>
 
         <!-- Hero Section -->
         <section class="relative min-h-[90vh] flex items-center py-16 sm:py-24 px-4 sm:px-6 lg:px-8 z-10 overflow-hidden">

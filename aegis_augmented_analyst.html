@@ -167,9 +167,9 @@
                             <span>EXECUTIVE SUMMARY (TL;DR)</span>
                         </div>
                         <div class="text-zinc-300 text-sm space-y-3 leading-relaxed">
-                            <p><strong class="text-silver-light">1. The Premise:</strong> Energy producers and underwriters need dynamic insight into subsurface infrastructure exposure against historical wildfire Fire-Free Intervals (FFI).</p>
-                            <p><strong class="text-silver-light">2. The Execution:</strong> Using Gemini to automate ETL data cleaning on 20 years of Alberta wildfire telemetry (2006–2025), we built a fully responsive risk engine.</p>
-                            <p><strong class="text-silver-light">3. The Live Artifact:</strong> Interact with the <strong>Aegis WCSB Risk Engine</strong> below with scenario toggles to evaluate portfolio exposure.</p>
+                            <p><strong class="text-silver-light">1. The Premise:</strong> Energy producers and underwriters need dynamic insight into subsurface infrastructure exposure against historical wildfire Fire-Free Intervals (FFI) and historical burn perimeters.</p>
+                            <p><strong class="text-silver-light">2. The Execution:</strong> Using GIS overlays and scenario stress-testing matrices, we built a fully responsive risk engine tracking both infrastructure and historical fire footprints.</p>
+                            <p><strong class="text-silver-light">3. The Live Artifact:</strong> Interact with the <strong>Aegis WCSB Risk Engine</strong> below with scenario toggles and historical burn zones to evaluate portfolio exposure.</p>
                         </div>
                     </div>
                 </div>
@@ -186,7 +186,7 @@
                 </div>
                 <div class="space-y-2 border-b border-zinc-900 pb-6">
                     <p class="uppercase text-zinc-400 tracking-wider">// CORE ENGINE</p>
-                    <p class="text-zinc-400 normal-case leading-relaxed">Leaflet GIS + Esri Dark Vector Canvas + Scenario Stress Testing.</p>
+                    <p class="text-zinc-400 normal-case leading-relaxed">Leaflet GIS + Esri Dark Vector Canvas + Burn Perimeter Overlays.</p>
                 </div>
             </aside>
 
@@ -201,18 +201,18 @@
                         In the Western Canadian Sedimentary Basin (WCSB), energy producers and underwriters are wrestling with a growing spatial blind spot: <strong>Fire-Free Interval (FFI) delta</strong>. Areas that have avoided wildfire for over 50 years accumulate extreme timber fuel loads, exponentially increasing catastrophic crown fire risk when ignition strikes.
                     </p>
                     <p>
-                        Rather than relying on static PDF reports or expensive enterprise GIS packages, we engineered <strong>Aegis</strong>—a zero-cost, interactive web utility that pairs regional wildfire telemetry with asset vulnerability modeling.
+                        Rather than relying on static PDF reports or expensive enterprise GIS packages, we engineered <strong>Aegis</strong>—a zero-cost, interactive web utility that pairs regional wildfire telemetry, historical burn footprints, and asset vulnerability modeling.
                     </p>
                 </section>
 
-                <!-- EMBEDDED INTERACTIVE INFOGRAPHIC: AEGIS RISK ENGINE WITH SCENARIO TOGGLES -->
+                <!-- EMBEDDED INTERACTIVE INFOGRAPHIC: AEGIS RISK ENGINE WITH SCENARIO TOGGLES & BURN PERIMETERS -->
                 <section class="space-y-6 border-t border-zinc-900 pt-10">
                     <span class="font-mono text-xs text-meridianGold tracking-widest block">[ SECTION_02 // INTERACTIVE EXPLORATION ]</span>
                     <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight leading-snug">
                         Aegis // WCSB Asset Risk & Compliance Engine
                     </h2>
                     <p class="text-xs font-mono text-zinc-500">
-                        Test the live conceptual model below. Switch scenarios to simulate drought stress or select map pins to inspect underwriting telemetry.
+                        Test the live conceptual model below. Switch scenarios to simulate drought stress, inspect historical burn perimeters, and evaluate asset telemetry.
                     </p>
 
                     <!-- Aegis Engine Container -->
@@ -222,11 +222,11 @@
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-zinc-800 pb-4 gap-4">
                             <div>
                                 <h3 class="text-meridianGold font-bold text-sm tracking-wider uppercase">AEGIS // WCSB Asset Risk & Compliance Engine</h3>
-                                <p class="text-[10px] text-zinc-500">Subsurface Infrastructure & Fire-Free Interval (FFI) Telemetry</p>
+                                <p class="text-[10px] text-zinc-500">Subsurface Infrastructure & Historical Burn Telemetry</p>
                             </div>
                             <div class="flex items-center space-x-2 text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-3 py-1 rounded-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                <span>STATUS: CONCEPT STRESS TEST ACTIVE</span>
+                                <span>STATUS: BURN PERIMETER OVERLAYS ACTIVE</span>
                             </div>
                         </div>
 
@@ -296,15 +296,15 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 text-center">
                             <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
                                 <span class="text-[10px] text-zinc-500 block uppercase">Assessed Assets</span>
-                                <span id="metricCount" class="text-lg font-bold text-zinc-100">8</span>
+                                <span id="metricCount" class="text-lg font-bold text-zinc-100">11</span>
                             </div>
                             <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
                                 <span class="text-[10px] text-zinc-500 block uppercase">Critical Risk (>50Y)</span>
-                                <span id="metricCritical" class="text-lg font-bold text-hazard-red">4</span>
+                                <span id="metricCritical" class="text-lg font-bold text-hazard-red">6</span>
                             </div>
                             <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
                                 <span class="text-[10px] text-zinc-500 block uppercase">Insured Value at Risk</span>
-                                <span id="metricValRisk" class="text-lg font-bold text-meridianGold">$142.8M</span>
+                                <span id="metricValRisk" class="text-lg font-bold text-meridianGold">$257.0M</span>
                             </div>
                             <div class="bg-obsidian p-3 border border-zinc-800 rounded-sm">
                                 <span class="text-[10px] text-zinc-500 block uppercase">Basin Drought Index</span>
@@ -345,7 +345,7 @@
 
     </div>
 
-    <!-- Leaflet & App Script with Scenario Stress Testing -->
+    <!-- Leaflet & App Script with Scenario Stress Testing & Burn Perimeters -->
     <script>
         const rawAssets = [
             { id: 'WELL-042', name: 'Pembina Cardium Wellhead Alpha', dls: '04-12-048-09W5M', ffiBase: 62, riskBase: 'Critical', value: '$14.2M', lat: 53.25, lon: -115.10 },
@@ -355,7 +355,28 @@
             { id: 'WELL-119', name: 'Red Deer Heavy Oil Battery', dls: '16-22-038-27W4M', ffiBase: 58, riskBase: 'Critical', value: '$9.8M', lat: 52.26, lon: -113.81 },
             { id: 'WELL-088', name: 'Fox Creek Condensate Facility', dls: '10-04-062-19W5M', ffiBase: 68, riskBase: 'Critical', value: '$28.4M', lat: 54.37, lon: -116.79 },
             { id: 'FAC-412', name: 'Lloydminster Thermal SAGD Node', dls: '06-11-050-28W3M', ffiBase: 31, riskBase: 'Moderate', value: '$12.5M', lat: 53.28, lon: -110.00 },
-            { id: 'COMP-505', name: 'Edmonton Inter-Pipeline Junction', dls: '04-18-053-23W4M', ffiBase: 24, riskBase: 'Low', value: '$6.4M', lat: 53.54, lon: -113.49 }
+            { id: 'COMP-505', name: 'Edmonton Inter-Pipeline Junction', dls: '04-18-053-23W4M', ffiBase: 24, riskBase: 'Low', value: '$6.4M', lat: 53.54, lon: -113.49 },
+            { id: 'PLANT-99', name: 'Swan Hills Sour Gas Processing Plant', dls: '08-22-065-10W5M', ffiBase: 79, riskBase: 'Critical', value: '$48.0M', lat: 54.68, lon: -115.35 },
+            { id: 'ORPHAN-12', name: 'Bonnyville Inactive Wellhead Cluster', dls: '14-03-061-03W4M', ffiBase: 53, riskBase: 'Critical', value: '$1.2M', lat: 54.27, lon: -110.74 },
+            { id: 'SAGD-07', name: 'Cold Lake In-Situ Steam Facility', dls: '02-11-064-02W4M', ffiBase: 41, riskBase: 'Moderate', value: '$65.0M', lat: 54.45, lon: -110.20 }
+        ];
+
+        // Historical Burn Perimeter Polygons (WCSB Wildfire Zones)
+        const burnPerimeters = [
+            {
+                name: "Edson Complex Perimeter (2023)",
+                riskLevel: "Critical",
+                coordinates: [
+                    [53.80, -116.50], [53.95, -116.20], [53.75, -115.90], [53.55, -116.30]
+                ]
+            },
+            {
+                name: "Fort McMurray/Boreal Zone (2016)",
+                riskLevel: "Critical",
+                coordinates: [
+                    [56.50, -111.60], [56.85, -111.20], [56.70, -110.80], [56.35, -111.30]
+                ]
+            }
         ];
 
         let currentScenario = 'baseline';
@@ -365,10 +386,10 @@
                 let ffi = a.ffiBase;
                 let risk = a.riskBase;
                 if (currentScenario === 'drought') {
-                    ffi += 15; // Drought amplifies effective fuel aging/dryness index
+                    ffi += 15; 
                     if (ffi > 50) risk = 'Critical';
                 } else if (currentScenario === 'postfire') {
-                    ffi = Math.max(2, ffi - 40); // Mitigation clears timber fuel loads
+                    ffi = Math.max(2, ffi - 40); 
                     risk = ffi > 50 ? 'Critical' : ffi > 30 ? 'Moderate' : 'Low';
                 }
                 return { ...a, ffi, risk };
@@ -388,6 +409,18 @@
         }).addTo(map);
 
         L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // Render Historical Burn Perimeter Overlays
+        burnPerimeters.forEach(zone => {
+            let polyColor = zone.riskLevel === 'Critical' ? '#f43f5e' : '#f97316';
+            L.polygon(zone.coordinates, {
+                color: polyColor,
+                weight: 1.5,
+                dashArray: '4, 4',
+                fillColor: polyColor,
+                fillOpacity: 0.15
+            }).addTo(map).bindPopup(`<strong style="color: ${polyColor}">HISTORICAL BURN ZONE:</strong><br>${zone.name}<br><em style="color: #a1a1aa">Fuel Load Recovery Active</em>`);
+        });
 
         let markerLayers = [];
 
@@ -440,15 +473,15 @@
             if (scenario === 'drought') {
                 droughtEl.textContent = "EXTREME (DC > 650)";
                 droughtEl.className = "text-lg font-bold text-hazard-red";
-                valRiskEl.textContent = "$184.2M";
+                valRiskEl.textContent = "$298.4M";
             } else if (scenario === 'postfire') {
                 droughtEl.textContent = "MITIGATED (DC < 300)";
                 droughtEl.className = "text-lg font-bold text-emerald-400";
-                valRiskEl.textContent = "$54.1M";
+                valRiskEl.textContent = "$92.1M";
             } else {
                 droughtEl.textContent = "HIGH (DC > 450)";
                 droughtEl.className = "text-lg font-bold text-hazardOrange";
-                valRiskEl.textContent = "$142.8M";
+                valRiskEl.textContent = "$257.0M";
             }
 
             executeSpatialQuery();
@@ -480,7 +513,7 @@
         });
 
         function exportUnderwritingPDF() {
-            alert('[AEGIS ENGINE] Generating automated underwriting risk audit PDF with active scenario telemetry...');
+            alert('[AEGIS ENGINE] Generating automated underwriting risk audit PDF with active scenario telemetry and historical burn perimeters...');
         }
 
         renderMarkers(40, '');

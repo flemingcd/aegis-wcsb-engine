@@ -21,7 +21,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<script src="nav.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -98,30 +98,7 @@
         <div class="hidden lg:block absolute left-1/4 top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-meridianGold/40 to-transparent pointer-events-none z-0"></div>
 
         <!-- Header Navigation -->
-        <header class="sticky top-0 z-50 bg-obsidian/85 backdrop-blur-md border-b border-zinc-800/50">
-            <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <!-- Brand Icon -->
-                    <a href="index.html" class="flex items-center space-x-3 group">
-                        <div class="relative w-8 h-8 flex items-center justify-center">
-                            <div class="absolute inset-0 border border-zinc-800 rounded-sm"></div>
-                            <div class="w-[1px] h-full bg-gradient-to-b from-meridianGold-light via-meridianGold to-meridianGold-dark gold-glow"></div>
-                        </div>
-                        <span class="font-mono tracking-widest text-silver-light text-sm font-semibold uppercase group-hover:text-meridianGold transition-colors">5th Meridian</span>
-                    </a>
-                </div>
-                <nav class="hidden md:flex items-center space-x-8 text-xs font-mono tracking-wider">
-                    <a href="index.html#about" class="hover:text-meridianGold transition-colors">01// ALIGNMENT</a>
-                    <a href="index.html#services" class="hover:text-meridianGold transition-colors">02// CAPABILITIES</a>
-                    <a href="index.html#grid-showcase" class="text-meridianGold hover:text-amber-300 transition-colors">02.5// 5M GRID</a>
-                    <a href="index.html#contact" class="hover:text-meridianGold transition-colors">03// INITIATE</a>
-                    <a href="https://www.linkedin.com/in/chris-fleming-a644182/" target="_blank" rel="noopener noreferrer" class="text-zinc-400 hover:text-meridianGold transition-colors">[ LINKEDIN ↗ ]</a>
-                </nav>
-                <a href="index.html#contact" class="px-4 py-2 border border-zinc-700 text-xs font-mono text-silver-light hover:border-meridianGold/80 hover:text-meridianGold transition-all duration-300">
-                    [ START INQUIRY ]
-                </a>
-            </div>
-        </header>
+        <five-meridian-nav active-page="grid_disruption"></five-meridian-nav>
 
         <!-- Editorial Hero Section -->
         <section class="relative py-20 px-6 z-10 border-b border-zinc-900">

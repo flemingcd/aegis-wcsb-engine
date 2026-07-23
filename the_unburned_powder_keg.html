@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Unburned Powder Keg | 5th Meridian Case Study</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Leaflet CSS & JS CDN for Spatial Mapping -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="nav.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#09090b',
+            charcoal: '#18181b',
+            panelBorder: '#27272a',
+            meridianGold: '#fbbf24',
+            amberLight: '#fef08a',
+            amberDark: '#d97706',
+            silverLight: '#f4f4f5',
+            silver: '#d4d4d8',
+            silverDark: '#a1a1aa',
+            hazardOrange: '#f97316',
+            hazardRed: '#f43f5e',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #09090b;
+      color: #d4d4d8;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .bg-grid-pattern {
+      background-image: linear-gradient(to right, rgba(39, 39, 42, 0.4) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(39, 39, 42, 0.4) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .glow-gold {
+      box-shadow: 0 0 25px -5px rgba(251, 191, 36, 0.15);
+    }
+
+    .glow-red {
+      box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.2);
+    }
+
+    /* Custom dark styling for Leaflet map popups */
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+      background-color: #18181b !important;
+      color: #f4f4f5 !important;
+      border: 1px solid #27272a !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7) !important;
+      font-family: 'Inter', sans-serif !important;
+    }
+    .leaflet-container {
+      background-color: #09090b !important;
+    }
+
+    /* Parallax & Visual Depth Styling */
+    .parallax-layer {
+      will-change: transform;
+      transition: transform 0.1s cubic-bezier(0, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    .glow-node {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-obsidian text-silver bg-grid-pattern antialiased relative overflow-x-hidden">
+
+  <!-- PARALLAX AMBIENT GLOW NODES -->
+  <div id="parallaxGlow1" class="glow-node parallax-layer w-96 h-96 bg-meridianGold top-20 -left-20"></div>
+  <div id="parallaxGlow2" class="glow-node parallax-layer w-[500px] h-[500px] bg-hazardOrange top-[1200px] -right-32"></div>
+  <div id="parallaxGlow3" class="glow-node parallax-layer w-[600px] h-[600px] bg-amber-600 top-[2600px] left-10"></div>
+
+  <!-- 5TH MERIDIAN GLOBAL NAVIGATION HEADER -->
+ <five-meridian-nav active-page="powder_keg"></five-meridian-nav>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-12 space-y-16">
+
+    <!-- HERO HEADER SECTION -->
+    <section class="space-y-6">
+      <div class="space-y-3">
+        <div class="inline-flex items-center space-x-2 text-xs font-mono text-meridianGold uppercase tracking-widest bg-charcoal px-3 py-1 rounded border border-panelBorder">
+          <span>DATA SCIENCE</span>
+          <span>•</span>
+          <span>WCSB INFRASTRUCTURE LIABILITY</span>
+          <span>•</span>
+          <span>ALBERTA WILDFIRE (2006–2025)</span>
+        </div>
+        
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-silverLight tracking-tight leading-tight">
+          The Unburned Powder Keg: <br />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-meridianGold via-amber-200 to-amber-600">
+            Predictive Wildfire Analytics &amp; Asset Exposure
+          </span>
+        </h1>
+        
+        <p class="text-lg text-silverDark max-w-3xl leading-relaxed">
+          How combining 20 years of historical wildfire micro-telemetry, spatial burn deficit modeling, and atmospheric threshold analysis exposes latent infrastructure risks across Western Canada.
+        </p>
+      </div>
+
+      <!-- METADATA BAR -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-panelBorder text-xs font-mono text-silverDark">
+        <div class="flex items-center space-x-6">
+          <div><span class="text-silver">AUTHOR:</span> 5th Meridian Engineering</div>
+          <div><span class="text-silver">DATASET:</span> 27,828 Incidents (2006–2025)</div>
+          <div><span class="text-silver">FOCUS:</span> Power Lines &amp; Fuel Deficits</div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+          <span>HUMAN-IN-THE-LOOP ANALYTICS</span>
+        </div>
+      </div>
+
+      <!-- SOCIAL MEDIA SHARE TOOLBAR -->
+      <div class="pt-4 flex flex-wrap items-center gap-2 font-mono text-xs">
+        <button onclick="shareLinkedIn()" class="bg-[#121215] border border-zinc-800 hover:border-meridianGold/60 rounded px-3 py-1.5 flex items-center gap-2 text-silverLight hover:text-meridianGold transition shadow-sm group">
+          <svg class="w-3.5 h-3.5 fill-current text-silverDark group-hover:text-meridianGold transition" viewBox="0 0 24 24">
+            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+          </svg>
+          <span>LINKEDIN</span>
+        </button>
+
+        <button onclick="shareX()" class="bg-[#121215] border border-zinc-800 hover:border-meridianGold/60 rounded px-3 py-1.5 flex items-center gap-2 text-silverLight hover:text-meridianGold transition shadow-sm group">
+          <svg class="w-3.5 h-3.5 fill-current text-silverDark group-hover:text-meridianGold transition" viewBox="0 0 24 24">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          <span>X (TWITTER)</span>
+        </button>
+
+        <button onclick="shareEmail()" class="bg-[#121215] border border-zinc-800 hover:border-meridianGold/60 rounded px-3 py-1.5 flex items-center gap-2 text-silverLight hover:text-meridianGold transition shadow-sm group">
+          <svg class="w-3.5 h-3.5 fill-none stroke-current text-silverDark group-hover:text-meridianGold transition" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+          </svg>
+          <span>EMAIL</span>
+        </button>
+
+        <button id="copyBtn" onclick="copyCaseStudyLink()" class="bg-[#121215] border border-zinc-800 hover:border-meridianGold/60 rounded px-3 py-1.5 flex items-center gap-2 text-silverLight hover:text-meridianGold transition shadow-sm group">
+          <svg class="w-3.5 h-3.5 fill-none stroke-current text-silverDark group-hover:text-meridianGold transition" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <path d="M12 11v6"></path>
+            <path d="m9 14 3-3 3 3"></path>
+          </svg>
+          <span id="copyBtnText">COPY LINK</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- METRIC SUMMARY GRID -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+      <div class="bg-charcoal border border-panelBorder rounded-lg p-5 space-y-1">
+        <div class="text-xs font-mono text-silverDark uppercase">Total 20-Yr Burned Area</div>
+        <div class="text-2xl font-mono font-bold text-meridianGold">7.30M ha</div>
+        <div class="text-[11px] text-silverDark">~72,984 km² across AB</div>
+      </div>
+      
+      <div class="bg-charcoal border border-panelBorder rounded-lg p-5 space-y-1">
+        <div class="text-xs font-mono text-silverDark uppercase">Class E Mega-Fires</div>
+        <div class="text-2xl font-mono font-bold text-hazardRed">1.89%</div>
+        <div class="text-[11px] text-silverDark">525 fires drive 99.17% of loss</div>
+      </div>
+      
+      <div class="bg-charcoal border border-panelBorder rounded-lg p-5 space-y-1">
+        <div class="text-xs font-mono text-silverDark uppercase">Power Line Ignitions</div>
+        <div class="text-2xl font-mono font-bold text-silverLight">1,543</div>
+        <div class="text-[11px] text-silverDark">218,745 ha burned footprint</div>
+      </div>
+
+      <div class="bg-charcoal border border-panelBorder rounded-lg p-5 space-y-1">
+        <div class="text-xs font-mono text-silverDark uppercase">Crossover Risk Spike</div>
+        <div class="text-2xl font-mono font-bold text-hazardOrange">4.6x</div>
+        <div class="text-[11px] text-silverDark">Class E jump when Temp ≥ RH</div>
+      </div>
+    </section>
+
+    <!-- EXECUTIVE TL;DR PANEL -->
+    <section class="bg-charcoal/90 border border-amber-500/30 rounded-2xl p-6 sm:p-8 relative overflow-hidden glow-gold space-y-6">
+      <div class="flex items-center justify-between border-b border-panelBorder pb-4">
+        <div class="flex items-center space-x-3">
+          <span class="px-2.5 py-1 rounded bg-meridianGold text-obsidian font-mono font-bold text-xs uppercase tracking-wider">TL;DR</span>
+          <h2 class="text-lg sm:text-xl font-bold font-mono text-silverLight">Executive Summary &amp; Key Investigation Answers</h2>
+        </div>
+        <span class="text-xs font-mono text-silverDark hidden sm:inline-block">HUMAN-IN-THE-LOOP EFFICIENCY</span>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 text-xs sm:text-sm text-silver leading-relaxed">
+        
+        <!-- COLUMN 1: THE DATA WORKFLOW SHIFT -->
+        <div class="space-y-3 bg-obsidian/60 border border-panelBorder rounded-xl p-4 sm:p-5">
+          <div class="flex items-center gap-2 text-meridianGold font-mono font-bold text-xs uppercase">
+            <span class="w-2 h-2 rounded-full bg-meridianGold"></span>
+            <span>1. The Modern Data Workflow</span>
+          </div>
+          <p class="text-silverDark text-xs leading-relaxed">
+            Instead of spending days manually downloading disjointed tables, wrestling with Excel pivot limits, and building static annual charts, modern AI-assisted pipelines allow us to ingest <strong>27,828 raw micro-records</strong>, clean timestamps, bin geographic coordinates, and model atmospheric tipping points in seconds.
+          </p>
+          <div class="bg-zinc-900/90 rounded border border-zinc-800 p-2.5 font-mono text-[11px] text-amberLight">
+            &gt; Core Takeaway: Shifts 90% of analyst bandwidth from tedious data harvesting to formulating and testing strategic operational questions.
+          </div>
+        </div>
+
+        <!-- COLUMN 2: THE CORE INVESTIGATION CHAIN -->
+        <div class="space-y-3 bg-obsidian/60 border border-panelBorder rounded-xl p-4 sm:p-5">
+          <div class="flex items-center gap-2 text-hazardOrange font-mono font-bold text-xs uppercase">
+            <span class="w-2 h-2 rounded-full bg-hazardOrange"></span>
+            <span>2. The Investigation Chain &amp; Findings</span>
+          </div>
+          <ul class="space-y-2 text-xs text-silverDark">
+            <li class="flex items-start gap-1.5">
+              <strong class="text-silver font-mono shrink-0">A. Top Man-Made Cause:</strong>
+              <span><strong>Power Line Industry</strong> is the #1 human/industrial ignition cause by burned area (1,543 fires | 218,745 ha).</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <strong class="text-silver font-mono shrink-0">B. Unburned Fuel Deficits:</strong>
+              <span>Identified high-ignition corridors with minimal 20-year burn history where heavy conifer fuel (<code class="text-amberLight">C2</code>) remains fully accumulated.</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <strong class="text-silver font-mono shrink-0">C. Infrastructure Intersections:</strong>
+              <span>Cross-referenced utility lines running through these unburned fuel beds (e.g., Edson/Hinton with 84 power line fires but only 1,462 ha burned).</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <strong class="text-silver font-mono shrink-0">D. Drought Tipping Points:</strong>
+              <span>Proved that during seasonal drought when weather hits Crossover (<code class="text-amberLight">Temp ≥ RH</code>), these unburned power line corridors transition into critical <strong>"powder kegs"</strong> with a <strong>4.6x higher conversion rate</strong> to mega-fires.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 01: WORKFLOW EVOLUTION -->
+    <section class="space-y-6">
+      <div class="border-b border-panelBorder pb-3">
+        <h2 class="text-2xl font-bold font-mono text-silverLight flex items-center gap-3">
+          <span class="text-meridianGold">01 //</span> The Evolution of the Workflow
+        </h2>
+        <p class="text-xs font-mono text-silverDark mt-1">FROM MANUAL SPREADSHEETS TO AI-AUGMENTED RISK INTELLIGENCE</p>
+      </div>
+
+      <p class="text-silver leading-relaxed">
+        A few years ago, tracking wildfire exposure meant manual, laborious maintenance: downloading annual summary tables from <code class="text-amberLight bg-charcoal px-1.5 py-0.5 rounded border border-panelBorder">open.alberta.ca</code>, hand-entering fire counts into a Google Sheet, and creating simple combo charts to map general causes against total hectares burned.
+      </p>
+
+      <!-- VISUAL SIDE-BY-SIDE COMPARISON OF WORKFLOWS -->
+      <div class="grid md:grid-cols-2 gap-6 my-6">
+        
+        <!-- MANUAL SPREADSHEET CARD -->
+        <div class="bg-charcoal/60 border border-panelBorder rounded-xl p-5 space-y-3">
+          <div class="flex items-center justify-between border-b border-panelBorder pb-2">
+            <span class="font-mono text-xs font-bold text-silverDark uppercase">Phase 1: Manual Google Sheet</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-silverDark">HIGH FRICTION</span>
+          </div>
+          
+          <div class="bg-obsidian border border-panelBorder rounded p-3 font-mono text-[11px] text-silverDark space-y-2">
+            <div class="text-amber-400">&gt; Annual aggregated tables only</div>
+            <div>&gt; Manual formula entry &amp; static charts</div>
+            <div>&gt; No spatial lat/lon coordinates</div>
+            <div>&gt; No weather telemetry or fuel types</div>
+            <div class="text-rose-400">&gt; Result: High friction, shallow insights</div>
+          </div>
+          <p class="text-xs text-silverDark leading-relaxed">
+            Manual sheets flattened thousands of complex incidents into simple yearly totals. They couldn't answer whether specific power line corridors were sitting in unburned timber beds during drought conditions.
+          </p>
+        </div>
+
+        <!-- AI-AUGMENTED PIPELINE CARD -->
+        <div class="bg-charcoal/60 border border-amber-500/30 rounded-xl p-5 space-y-3 glow-gold">
+          <div class="flex items-center justify-between border-b border-panelBorder pb-2">
+            <span class="font-mono text-xs font-bold text-meridianGold uppercase">Phase 2: AI-Augmented Micro-Telemetry</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-meridianGold font-semibold">HIGH VELOCITY</span>
+          </div>
+          
+          <div class="bg-obsidian border border-panelBorder rounded p-3 font-mono text-[11px] text-silverLight space-y-2">
+            <div class="text-emerald-400">&gt; Ingests 27,828 raw micro-records</div>
+            <div class="text-amberLight">&gt; Instant spatial grid binning (1°x1°)</div>
+            <div>&gt; Weather threshold modeling (Crossover)</div>
+            <div>&gt; Fuel-type volatility analysis (C2/O1a)</div>
+            <div class="text-meridianGold">&gt; Result: Immediate hypothesis testing</div>
+          </div>
+          <p class="text-xs text-silverDark leading-relaxed">
+            By shifting data harvesting and Python code execution to AI, the analyst's role is transformed. The focus shifts entirely to framing the right strategic questions and auditing results for operational decision-making.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PARALLAX INTERSTITIAL STAT BANNER -->
+    <section class="my-12 py-12 px-6 rounded-2xl bg-gradient-to-r from-charcoal via-zinc-900 to-charcoal border border-amber-500/20 relative overflow-hidden shadow-2xl">
+      <div id="parallaxBannerBg" class="absolute inset-0 bg-grid-pattern opacity-30 parallax-layer scale-110"></div>
+      <div class="relative z-10 max-w-3xl mx-auto text-center space-y-4">
+        <div class="inline-block px-3 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amberLight font-mono text-xs uppercase tracking-widest">
+          ATMOSPHERIC TIPPING POINT
+        </div>
+        <h3 class="text-2xl sm:text-4xl font-extrabold font-mono text-silverLight tracking-tight">
+          When Temperature Meets Humidity: <br />
+          <span class="text-meridianGold">A 4.6x Jump in Conversion to Mega-Fires</span>
+        </h3>
+        <p class="text-xs sm:text-sm font-sans text-silverDark max-w-xl mx-auto leading-relaxed">
+          At Crossover (<code class="text-amberLight">Temp ≥ RH</code>), moisture drops below 10% in fine grass fuels, turning simple power line arcs into unstoppable crown fire vectors.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 02: METEOROLOGICAL TIPPING POINTS -->
+    <section class="space-y-6">
+      <div class="border-b border-panelBorder pb-3">
+        <h2 class="text-2xl font-bold font-mono text-silverLight flex items-center gap-3">
+          <span class="text-meridianGold">02 //</span> Meteorological Tipping Points
+        </h2>
+        <p class="text-xs font-mono text-silverDark mt-1">THE MATHEMATICS OF RUNAWAY MEGA-FIRES</p>
+      </div>
+
+      <p class="text-silver leading-relaxed">
+        Evaluating 24,887 complete meteorological records demonstrates that wildfire expansion does not follow a smooth linear curve. Instead, fires hit sharp atmospheric tipping points.
+      </p>
+
+      <!-- CHART.JS CONTAINERS GRID -->
+      <div class="grid md:grid-cols-2 gap-6 my-6">
+        
+        <!-- CHART 1: CONVERSION RATE -->
+        <div class="bg-charcoal border border-panelBorder rounded-xl p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-mono text-xs font-bold text-meridianGold uppercase">Class E (>200 ha) Conversion Rate (%)</h3>
+            <span class="text-[10px] font-mono text-silverDark">2006–2025 TELEMETRY</span>
+          </div>
+          <div class="h-64 relative">
+            <canvas id="conversionChart"></canvas>
+          </div>
+          <p class="text-[11px] text-silverDark">
+            When ambient Temperature (°C) exceeds Relative Humidity (%), the conversion rate of minor spot fires into Class E mega-fires jumps 4.6x.
+          </p>
+        </div>
+
+        <!-- CHART 2: FUEL TYPE VOLATILITY -->
+        <div class="bg-charcoal border border-panelBorder rounded-xl p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-mono text-xs font-bold text-meridianGold uppercase">Cumulative Burned Area by Fuel Type (M ha)</h3>
+            <span class="text-[10px] font-mono text-silverDark">CANADIAN FBP SYSTEM</span>
+          </div>
+          <div class="h-64 relative">
+            <canvas id="fuelChart"></canvas>
+          </div>
+          <p class="text-[11px] text-silverDark">
+            C2 Boreal Spruce accounts for 68.01% (4.96M ha) of all burned land area across Alberta over the 20-year history.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 03: SPATIAL RISK MAP -->
+    <section class="space-y-6">
+      <div class="border-b border-panelBorder pb-3 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold font-mono text-silverLight flex items-center gap-3">
+            <span class="text-meridianGold">03 //</span> Interactive Spatial Risk Map
+          </h2>
+          <p class="text-xs font-mono text-silverDark mt-1">UNBURNED POWER LINE CORRIDORS &amp; DROUGHT TIPPING POINTS</p>
+        </div>
+
+        <!-- MAP CONDITION CONTROLS -->
+        <div class="flex items-center space-x-2 bg-charcoal p-1.5 rounded-lg border border-panelBorder font-mono text-xs">
+          <span class="text-silverDark px-2">SIMULATED WEATHER:</span>
+          <button id="btnBaseline" onclick="setMapCondition('baseline')" class="px-3 py-1 rounded bg-meridianGold text-obsidian font-bold border border-amber-400 transition shadow-sm">
+            Baseline Weather
+          </button>
+          <button id="btnCrossover" onclick="setMapCondition('crossover')" class="px-3 py-1 rounded bg-zinc-800 text-silverDark border border-panelBorder hover:text-meridianGold hover:bg-zinc-700 transition">
+            🔥 Crossover (Temp ≥ RH)
+          </button>
+        </div>
+      </div>
+
+      <!-- WEATHER EXPLANATION PANEL -->
+      <div class="grid sm:grid-cols-2 gap-4 text-xs font-mono">
+        <div class="bg-obsidian border border-panelBorder rounded-xl p-4 space-y-1.5">
+          <div class="flex items-center gap-2 text-silverLight font-bold uppercase">
+            <span class="w-2 h-2 rounded-full bg-zinc-400"></span>
+            <span>Baseline Weather Scenario</span>
+          </div>
+          <p class="text-silverDark leading-relaxed font-sans text-[12px]">
+            Represents typical seasonal moisture where Relative Humidity stays well above ambient temperature (e.g., 18°C / 50% RH). Fuel retains moisture, meaning local power line arcs produce minor, easily suppressed spot fires that rarely escape containment.
+          </p>
+        </div>
+
+        <div class="bg-obsidian border border-amber-500/30 rounded-xl p-4 space-y-1.5 glow-gold">
+          <div class="flex items-center gap-2 text-meridianGold font-bold uppercase">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>🔥 Crossover Threshold (Temp ≥ RH)</span>
+          </div>
+          <p class="text-silverDark leading-relaxed font-sans text-[12px]">
+            An extreme fire-weather tipping point where temperature equals or exceeds RH (e.g., 25°C / ≤25% RH). Fine fuel moisture drops below 10%, causing power line sparks to instantly ignite fast-moving surface grass fires that climb into mature conifer crowns. Toggle above to see risk radii expand.
+          </p>
+        </div>
+      </div>
+
+      <!-- LEAFLET MAP CONTAINER -->
+      <div class="bg-charcoal border border-panelBorder rounded-2xl overflow-hidden shadow-2xl relative">
+        <div id="riskMap" class="w-full h-[480px] z-10"></div>
+        
+        <!-- MAP OVERLAY LEGEND -->
+        <div class="absolute bottom-4 right-4 z-20 bg-obsidian/90 border border-panelBorder rounded-lg p-3 text-xs font-mono space-y-2 backdrop-blur-md">
+          <div class="font-bold text-silverLight border-b border-panelBorder pb-1 uppercase tracking-wider">Map Legend</div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-hazardOrange animate-pulse"></span>
+            <span>Power Line Hotspot (High Ignitions)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full border-2 border-emerald-500 bg-emerald-500/20"></span>
+            <span>Unburned C2 Fuel Deficit Zone</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-hazardRed"></span>
+            <span>Class E Historical Blowout Site</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CORRIDOR CARDS GRID -->
+      <div class="grid sm:grid-cols-3 gap-4 pt-2">
+        
+        <!-- CARD 1 -->
+        <div class="bg-charcoal border border-panelBorder hover:border-meridianGold/60 rounded-xl p-4 space-y-2 cursor-pointer transition group" onclick="focusCorridor(53.5, -117.2, 9)">
+          <div class="flex items-center justify-between text-xs font-mono text-silverDark">
+            <span class="group-hover:text-meridianGold transition">GRID CELL 53°N, 117°W</span>
+            <span class="text-hazardOrange font-bold">84 FIRES</span>
+          </div>
+          <h4 class="font-bold font-mono text-silverLight text-sm flex items-center justify-between">
+            <span>Edson / Hinton Corridor</span>
+            <span class="text-[10px] text-meridianGold font-mono opacity-0 group-hover:opacity-100 transition">MAP 🎯</span>
+          </h4>
+          <p class="text-xs text-silverDark leading-relaxed">
+            84 power line fires triggered, but only 1,462 ha burned total over 20 years. Surrounding C2 spruce stands remain fully accumulated. Click to focus map.
+          </p>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="bg-charcoal border border-panelBorder hover:border-meridianGold/60 rounded-xl p-4 space-y-2 cursor-pointer transition group" onclick="focusCorridor(51.2, -115.1, 9)">
+          <div class="flex items-center justify-between text-xs font-mono text-silverDark">
+            <span class="group-hover:text-meridianGold transition">GRID CELL 51°N, 115°W</span>
+            <span class="text-hazardOrange font-bold">35 FIRES</span>
+          </div>
+          <h4 class="font-bold font-mono text-silverLight text-sm flex items-center justify-between">
+            <span>Cochrane / Calgary West</span>
+            <span class="text-[10px] text-meridianGold font-mono opacity-0 group-hover:opacity-100 transition">MAP 🎯</span>
+          </h4>
+          <p class="text-xs text-silverDark leading-relaxed">
+            35 power line ignitions in dense O1a grass and fine fuels with under 733 ha total cumulative burn history. Click to focus map.
+          </p>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="bg-charcoal border border-panelBorder hover:border-meridianGold/60 rounded-xl p-4 space-y-2 cursor-pointer transition group" onclick="focusCorridor(56.2, -118.1, 9)">
+          <div class="flex items-center justify-between text-xs font-mono text-silverDark">
+            <span class="group-hover:text-meridianGold transition">GRID CELL 56°N, 118°W</span>
+            <span class="text-hazardOrange font-bold">28 FIRES</span>
+          </div>
+          <h4 class="font-bold font-mono text-silverLight text-sm flex items-center justify-between">
+            <span>Peace River South</span>
+            <span class="text-[10px] text-meridianGold font-mono opacity-0 group-hover:opacity-100 transition">MAP 🎯</span>
+          </h4>
+          <p class="text-xs text-silverDark leading-relaxed">
+            Agricultural fringe rights-of-way experiencing recurring spring power line arcs near unburned boreal forest. Click to focus map.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 04: STRATEGIC TAKEAWAYS -->
+    <section class="space-y-6">
+      <div class="border-b border-panelBorder pb-3">
+        <h2 class="text-2xl font-bold font-mono text-silverLight flex items-center gap-3">
+          <span class="text-meridianGold">04 //</span> Strategic Operational Takeaways
+        </h2>
+        <p class="text-xs font-mono text-silverDark mt-1">TRANSLATING DATA INTO FIELD PREVENTATIVE POLICY</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        
+        <!-- RECOMMENDATION 1 -->
+        <div class="bg-charcoal border border-panelBorder rounded-xl p-5 space-y-3">
+          <div class="w-7 h-7 rounded bg-meridianGold/10 border border-meridianGold/30 flex items-center justify-center font-mono font-bold text-meridianGold text-xs">
+            01
+          </div>
+          <h3 class="font-bold font-mono text-silverLight text-sm">Dynamic Hot-Work Permitting</h3>
+          <p class="text-xs text-silverDark leading-relaxed">
+            Replace static calendar bans with automated permits that suspend grinding, flaring, and welding whenever local weather telemetry hits <code class="text-amberLight">Temp ≥ RH</code> or wind exceeds <code class="text-amberLight">20 km/h</code>.
+          </p>
+        </div>
+
+        <!-- RECOMMENDATION 2 -->
+        <div class="bg-charcoal border border-panelBorder rounded-xl p-5 space-y-3">
+          <div class="w-7 h-7 rounded bg-hazardOrange/10 border border-hazardOrange/30 flex items-center justify-center font-mono font-bold text-hazardOrange text-xs">
+            02
+          </div>
+          <h3 class="font-bold font-mono text-silverLight text-sm">Right-of-Way Grass Mowing</h3>
+          <p class="text-xs text-silverDark leading-relaxed">
+            Prioritize mechanical clearing and mowing of O1a grass along utility rights-of-way before spring melt to prevent fast surface ignition from power line arcs.
+          </p>
+        </div>
+
+        <!-- RECOMMENDATION 3 -->
+        <div class="bg-charcoal border border-panelBorder rounded-xl p-5 space-y-3">
+          <div class="w-7 h-7 rounded bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-mono font-bold text-emerald-500 text-xs">
+            03
+          </div>
+          <h3 class="font-bold font-mono text-silverLight text-sm">Spatial Burn-Deficit Audits</h3>
+          <p class="text-xs text-silverDark leading-relaxed">
+            Audit asset portfolios against unburned C2 spruce fuel beds rather than static historical burn maps to deploy defensible space clearing before drought seasons arrive.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 05: COMMERCIAL HORIZON & HUMAN SHIFT -->
+    <section class="space-y-6">
+      <div class="border-b border-panelBorder pb-3">
+        <h2 class="text-2xl font-bold font-mono text-silverLight flex items-center gap-3">
+          <span class="text-meridianGold">05 //</span> Commercial Horizon &amp; The Human-Centric Data Shift
+        </h2>
+        <p class="text-xs font-mono text-silverDark mt-1">WHERE METRICS MEET OPERATIONAL LIABILITIES AND HUMAN INTUITION</p>
+      </div>
+
+      <p class="text-silver leading-relaxed">
+        This investigation demonstrates that data science is not an academic exercise—it is a live risk-mitigation discipline. The ability to cross-examine 20 years of micro-telemetry against infrastructure positions yields immediate commercial value across several core sectors:
+      </p>
+
+      <!-- THREE APPLICATION CARDS -->
+      <div class="grid md:grid-cols-3 gap-6 my-6">
+        
+        <!-- CARD 1: ENERGY ASSET RISK -->
+        <div class="bg-charcoal/80 border border-panelBorder rounded-xl p-5 space-y-3">
+          <div class="flex items-center justify-between border-b border-panelBorder pb-2">
+            <span class="font-mono text-xs font-bold text-amberLight uppercase">Energy Asset Management</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400">OPERATIONAL RISK</span>
+          </div>
+          <h4 class="font-bold font-mono text-silverLight text-sm">Targeted Infrastructure Hardening</h4>
+          <p class="text-xs text-silverDark leading-relaxed">
+            Midstream and upstream operators can overlay pipeline rights-of-way, compressor stations, and wellhead batteries against spatial fuel deficit models. Identifying unburned C2 spruce beds around critical facilities allows for proactive vegetative clearing, sprinkler installation, and automated shut-in triggers before drought seasons hit.
+          </p>
+        </div>
+
+        <!-- CARD 2: INSURANCE & UNDERWRITING -->
+        <div class="bg-charcoal/80 border border-panelBorder rounded-xl p-5 space-y-3">
+          <div class="flex items-center justify-between border-b border-panelBorder pb-2">
+            <span class="font-mono text-xs font-bold text-hazardOrange uppercase">Insurance &amp; Underwriting</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400">LIABILITY PRICING</span>
+          </div>
+          <h4 class="font-bold font-mono text-silverLight text-sm">Physics-Based Risk Profiling</h4>
+          <p class="text-xs text-silverDark leading-relaxed">
+            Underwriters no longer need to rely on blunt, postal-code-level historical burn averages that suffer from survivor bias. By pricing liability based on fuel-type continuity, power line density, and seasonal weather tipping points (<code class="text-amberLight">Temp ≥ RH</code>), insurers can structure premiums and defensible-space mandates around true physical risk.
+          </p>
+        </div>
+
+        <!-- CARD 3: UTILITY & REGULATORY POLICY -->
+        <div class="bg-charcoal/80 border border-panelBorder rounded-xl p-5 space-y-3">
+          <div class="flex items-center justify-between border-b border-panelBorder pb-2">
+            <span class="font-mono text-xs font-bold text-emerald-400 uppercase">Utility &amp; Regulatory Policy</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400">RIGHT-OF-WAY POLICY</span>
+          </div>
+          <h4 class="font-bold font-mono text-silverLight text-sm">Precision Right-of-Way Clearing</h4>
+          <p class="text-xs text-silverDark leading-relaxed">
+            Power utilities can optimize multi-million-dollar vegetation management budgets. By focusing mowing and tree-trimming resources on corridors that intersect O1a grass and unburned C2 timber—rather than uniform calendar-based clearing—utilities significantly reduce ignition probabilities during dry spring melt periods.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- THE HUMAN-CENTRIC DATA SHIFT FEATURE BOX -->
+      <div class="bg-gradient-to-br from-charcoal via-obsidian to-charcoal border border-amber-500/30 rounded-2xl p-6 sm:p-8 space-y-4 glow-gold">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded bg-gradient-to-br from-meridianGold to-amberDark flex items-center justify-center font-mono font-bold text-obsidian text-sm shadow-md">
+            &gt;_
+          </div>
+          <div>
+            <h3 class="text-lg font-bold font-mono text-silverLight">The Wider Paradigm: Data Analysis is Becoming More Human</h3>
+            <p class="text-xs font-mono text-meridianGold">ELEVATING THE ANALYST FROM DATA JANITOR TO STRATEGIC ARCHITECT</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 pt-2 text-xs text-silverDark leading-relaxed">
+          <div class="space-y-2">
+            <p>
+              Historically, data analytics was bottlenecked by manual drudgery. Analysts spent 90% of their bandwidth scraping tables, fixing broken Excel formulas, manually updating Google Sheets, and generating static pie charts. The focus was almost entirely on the <em class="text-silver">mechanics of data harvesting</em> rather than the <em class="text-silver">art of investigation</em>.
+            </p>
+            <p>
+              The emergence of AI-assisted data pipelines does not replace human intellect—it liberates it. By delegating data cleaning, spatial binning, and code execution to intelligent tooling in seconds, the barrier between curiosity and insight vanishes.
+            </p>
+          </div>
+
+          <div class="space-y-2 bg-obsidian/70 border border-panelBorder rounded-xl p-4 font-mono text-[11px] text-silver">
+            <div class="text-meridianGold font-bold border-b border-panelBorder pb-1 uppercase tracking-wider">The Human-in-the-Loop Advantage</div>
+            <ul class="space-y-2 pt-1 text-silverDark">
+              <li class="flex items-start gap-1.5">
+                <span class="text-amberLight font-bold">•</span>
+                <span><strong>Asking Better Questions:</strong> AI can compute statistics, but only a human analyst asks: <em>"Why are power line fires escaping into mega-fires in Edson even though past burn totals look low?"</em></span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-amberLight font-bold">•</span>
+                <span><strong>Recognizing Survivor Bias:</strong> Identifying that an unburned forest isn't safe—it's an unburned powder keg accumulating fuel.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-amberLight font-bold">•</span>
+                <span><strong>Translating Code to Action:</strong> Transforming raw correlation tables into field policy, dynamic permitting, and real-world asset protection.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="border-t border-panelBorder bg-obsidian py-8 mt-16 text-xs font-mono text-silverDark">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center space-x-2">
+        <div class="w-5 h-5 rounded bg-meridianGold text-obsidian flex items-center justify-center font-bold text-[10px]">5M</div>
+        <span>© 5th Meridian Engineering &amp; Spatial Analytics</span>
+      </div>
+      <div>DATA SOURCE: Alberta Agriculture &amp; Forestry Open Records (2006–2025)</div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      if (menu) {
+        menu.classList.toggle('hidden');
+      }
+    }
+
+    function shareLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent("The Unburned Powder Keg: Predictive Wildfire Analytics & Asset Exposure");
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank', 'width=600,height=600');
+    }
+
+    function shareX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent("The Unburned Powder Keg: Predictive Wildfire Analytics & Infrastructure Risk by @5thMeridian");
+      window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
+    }
+
+    function shareEmail() {
+      const subject = encodeURIComponent("5th Meridian Case Study: The Unburned Powder Keg");
+      const body = encodeURIComponent(`Check out this 5th Meridian case study on predictive wildfire analytics and infrastructure exposure:\n\n${window.location.href}`);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }
+
+    function copyCaseStudyLink() {
+      const btnText = document.getElementById('copyBtnText');
+      const tempInput = document.createElement('input');
+      tempInput.value = window.location.href;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      
+      try {
+        document.execCommand('copy');
+        if (btnText) {
+          btnText.innerText = 'COPIED!';
+          btnText.classList.add('text-meridianGold');
+          setTimeout(() => {
+            btnText.innerText = 'COPY LINK';
+            btnText.classList.remove('text-meridianGold');
+          }, 2000);
+        }
+      } catch (err) {
+        console.error('Failed to copy URL', err);
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    let riskMapInstance = null;
+    let riskCirclesGroup = null;
+
+    function focusCorridor(lat, lon, zoom = 9) {
+      if (riskMapInstance) {
+        riskMapInstance.flyTo([lat, lon], zoom, { duration: 1.5 });
+      }
+    }
+
+    let currentMapCondition = 'baseline';
+
+    function setMapCondition(condition) {
+      currentMapCondition = condition;
+      
+      const btnBase = document.getElementById('btnBaseline');
+      const btnCross = document.getElementById('btnCrossover');
+
+      if (condition === 'crossover') {
+        if (btnCross) btnCross.className = "px-3 py-1 rounded bg-hazardOrange text-obsidian border border-amber-400 font-bold shadow-lg transition";
+        if (btnBase) btnBase.className = "px-3 py-1 rounded bg-zinc-800 text-silverDark border border-panelBorder hover:text-silverLight hover:bg-zinc-700 transition";
+      } else {
+        if (btnBase) btnBase.className = "px-3 py-1 rounded bg-meridianGold text-obsidian border border-amber-400 font-bold shadow-sm transition";
+        if (btnCross) btnCross.className = "px-3 py-1 rounded bg-zinc-800 text-silverDark border border-panelBorder hover:text-meridianGold hover:bg-zinc-700 transition";
+      }
+
+      if (riskCirclesGroup) {
+        riskCirclesGroup.clearLayers();
+        populateMapLayers(condition);
+      }
+    }
+
+    const corridorData = [
+      { lat: 53.5, lon: -117.2, name: "Edson / Hinton Corridor", fires: 84, ha: 1462, c2: 202, baseRadius: 12000, crossRadius: 35000 },
+      { lat: 51.2, lon: -115.1, name: "Cochrane / Calgary West", fires: 35, ha: 732, c2: 41, baseRadius: 8000, crossRadius: 28000 },
+      { lat: 56.2, lon: -118.1, name: "Peace River South", fires: 28, ha: 2997, c2: 54, baseRadius: 9000, crossRadius: 30000 },
+      { lat: 56.67, lon: -111.46, name: "Fort McMurray (Horse River Blowout)", fires: 145, ha: 485123, c2: 890, baseRadius: 25000, crossRadius: 60000 },
+      { lat: 58.28, lon: -117.27, name: "Chuckegg Creek Corridor", fires: 163, ha: 334772, c2: 620, baseRadius: 20000, crossRadius: 55000 },
+      { lat: 55.71, lon: -114.40, name: "Marten Hills / Slave Lake Heavy Oil", fires: 80, ha: 222837, c2: 310, baseRadius: 18000, crossRadius: 45000 }
+    ];
+
+    function populateMapLayers(condition) {
+      corridorData.forEach(item => {
+        const isCrossover = condition === 'crossover';
+        const radius = isCrossover ? item.crossRadius : item.baseRadius;
+        const color = isCrossover ? '#f97316' : '#fbbf24';
+        const fillColor = isCrossover ? '#f43f5e' : '#fbbf24';
+        const fillOpacity = isCrossover ? 0.35 : 0.15;
+
+        const circle = L.circle([item.lat, item.lon], {
+          color: color,
+          fillColor: fillColor,
+          fillOpacity: fillOpacity,
+          weight: isCrossover ? 2 : 1,
+          radius: radius
+        });
+
+        const popupContent = `
+          <div class="space-y-1">
+            <div class="font-bold text-sm font-mono text-amber-400">${item.name}</div>
+            <div class="text-xs font-mono text-zinc-300">Lat: ${item.lat}, Lon: ${item.lon}</div>
+            <div class="text-xs space-y-0.5 pt-1 border-t border-zinc-700">
+              <div><strong class="text-amber-300">Power Line Fires:</strong> ${item.fires}</div>
+              <div><strong class="text-amber-300">20-Yr Burn Total:</strong> ${item.ha.toLocaleString()} ha</div>
+              <div><strong class="text-amber-300">Simulated State:</strong> <span class="${isCrossover ? 'text-rose-400 font-bold' : 'text-emerald-400'}">${isCrossover ? 'CRITICAL CROSSOVER' : 'Baseline'}</span></div>
+            </div>
+          </div>
+        `;
+
+        circle.bindPopup(popupContent);
+        riskCirclesGroup.addLayer(circle);
+
+        const marker = L.circleMarker([item.lat, item.lon], {
+          radius: 6,
+          color: '#f43f5e',
+          fillColor: '#fbbf24',
+          fillOpacity: 0.9
+        });
+        marker.bindPopup(popupContent);
+        riskCirclesGroup.addLayer(marker);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Leaflet Map
+      const mapContainer = document.getElementById('riskMap');
+      if (mapContainer) {
+        riskMapInstance = L.map('riskMap', {
+          center: [54.5, -115.0],
+          zoom: 6,
+          scrollWheelZoom: false
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: 'abcd',
+          maxZoom: 19
+        }).addTo(riskMapInstance);
+
+        riskCirclesGroup = L.layerGroup().addTo(riskMapInstance);
+        populateMapLayers('baseline');
+      }
+
+      // Chart 1: Conversion Rates
+      const ctxConversion = document.getElementById('conversionChart');
+      if (ctxConversion) {
+        new Chart(ctxConversion, {
+          type: 'bar',
+          data: {
+            labels: ['Baseline (No Crossover)', 'Crossover (Temp ≥ RH)', 'Extreme (Temp ≥ 25°C, RH ≤ 25%)'],
+            datasets: [{
+              label: 'Class E Conversion Rate (%)',
+              data: [1.65, 7.65, 9.15],
+              backgroundColor: ['rgba(161, 161, 170, 0.6)', 'rgba(251, 191, 36, 0.8)', 'rgba(244, 63, 94, 0.9)'],
+              borderColor: ['#a1a1aa', '#fbbf24', '#f43f5e'],
+              borderWidth: 1.5,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 12,
+                grid: { color: '#27272a' },
+                ticks: { color: '#a1a1aa', font: { family: 'JetBrains Mono' } }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#d4d4d8', font: { family: 'JetBrains Mono', size: 10 } }
+              }
+            }
+          }
+        });
+      }
+
+      // Chart 2: Fuel Type Severity
+      const ctxFuel = document.getElementById('fuelChart');
+      if (ctxFuel) {
+        new Chart(ctxFuel, {
+          type: 'bar',
+          data: {
+            labels: ['C2 (Boreal Spruce)', 'O1a (Matted Grass)', 'C1 (Spruce Woodland)', 'M1 (Mixedwood - Dormant)', 'M2 (Mixedwood - Green)'],
+            datasets: [{
+              label: 'Burned Area (M ha)',
+              data: [4.96, 0.81, 0.52, 0.31, 0.30],
+              backgroundColor: ['#d97706', '#fbbf24', '#f59e0b', '#71717a', '#52525b'],
+              borderColor: '#27272a',
+              borderWidth: 1,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: { color: '#27272a' },
+                ticks: { color: '#a1a1aa', font: { family: 'JetBrains Mono' } }
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: '#d4d4d8', font: { family: 'JetBrains Mono', size: 10 } }
+              }
+            }
+          }
+        });
+      }
+
+      // Parallax Scroll Loop
+      let ticking = false;
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          window.requestAnimationFrame(function() {
+            const scrolly = window.scrollY;
+            
+            const g1 = document.getElementById('parallaxGlow1');
+            const g2 = document.getElementById('parallaxGlow2');
+            const g3 = document.getElementById('parallaxGlow3');
+            const banner = document.getElementById('parallaxBannerBg');
+
+            if (g1) g1.style.transform = `translate3d(0, ${scrolly * 0.15}px, 0)`;
+            if (g2) g2.style.transform = `translate3d(0, ${scrolly * -0.1}px, 0)`;
+            if (g3) g3.style.transform = `translate3d(0, ${scrolly * 0.08}px, 0)`;
+            if (banner) banner.style.transform = `translate3d(0, ${scrolly * 0.05}px, 0)`;
+
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
